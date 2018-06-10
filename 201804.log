@@ -1,0 +1,23 @@
+;;; 
+Export: Release 11.2.0.4.0 - Production on 星期六 6月 9 19:14:28 2018
+
+Copyright (c) 1982, 2011, Oracle and/or its affiliates.  All rights reserved.
+;;; 
+连接到: Oracle Database 11g Enterprise Edition Release 11.2.0.4.0 - 64bit Production
+With the Partitioning, OLAP, Data Mining and Real Application Testing options
+启动 "ZYHBCS"."SYS_EXPORT_SCHEMA_02":  zyhbcs/******** schemas=zyhbcs directory=dump_dir dumpfile=201804.dmp logfile=201804.log 
+正在使用 BLOCKS 方法进行估计...
+处理对象类型 SCHEMA_EXPORT/TABLE/TABLE_DATA
+使用 BLOCKS 方法的总估计: 8.560 GB
+处理对象类型 SCHEMA_EXPORT/USER
+处理对象类型 SCHEMA_EXPORT/SYSTEM_GRANT
+处理对象类型 SCHEMA_EXPORT/ROLE_GRANT
+处理对象类型 SCHEMA_EXPORT/DEFAULT_ROLE
+处理对象类型 SCHEMA_EXPORT/PRE_SCHEMA/PROCACT_SCHEMA
+处理对象类型 SCHEMA_EXPORT/TABLE/TABLE
+处理对象类型 SCHEMA_EXPORT/TABLE/COMMENT
+处理对象类型 SCHEMA_EXPORT/TABLE/INDEX/INDEX
+处理对象类型 SCHEMA_EXPORT/TABLE/CONSTRAINT/CONSTRAINT
+处理对象类型 SCHEMA_EXPORT/TABLE/INDEX/STATISTICS/INDEX_STATISTICS
+处理对象类型 SCHEMA_EXPORT/VIEW/VIEW
+处理对象类型 SCHEMA_EXPORT/TABLE/STATISTICS/TABLE_STATISTICS
