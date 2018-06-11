@@ -17,14 +17,29 @@ create or replace package zyhbrpt is
    cursor cur_org_rpt(rpt_code_param varchar2 default  V_ORG_CODE ,
                       rpt_org_sys    varchar2 default  V_RPT_ORG_SYS , 
                       rpt_org_sys_v  varchar2 default  V_RPT_ORG_SYS_V) is 
-   
-          select a.* 
-          from   org_reportmanastrumember_v  a 
-          where
-          11=11
-          and a.dr = 0 
-          and a.pk_svid = rpt_org_sys_v
-          and a.pk_rms= rpt_org_sys   ;
+                      
+          with a_all as 
+          (
+            select a.* 
+            from   org_reportmanastrumember_v  a 
+            where
+            11=11
+            and a.dr = 0 
+            and a.pk_svid = rpt_org_sys_v
+            and a.pk_rms= rpt_org_sys   
+          ) , 
+          a_father as 
+          (
+            select  a.code rpt_org_code , a.name rpt_org_name , a.pk_org , a.pk_vid
+            from   org_reportorg a 
+            where 
+            11=11
+            and a.dr = 0 
+            and a.code like rpt_code_param    
+          )
+          
+          select * from a_father
+          ;
      
           
           
