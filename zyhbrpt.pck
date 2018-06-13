@@ -22,6 +22,13 @@ create or replace package zyhbrpt is
    
    
    
+   
+   
+   
+   
+
+   
+   
    -- report org  info with children 
    
    cursor cur_org_rpt(rpt_code_param varchar2 default  V_ORG_CODE ,
@@ -114,16 +121,17 @@ create or replace package zyhbrpt is
             and aa.dr = 0 
             and aa.code like rpt_code_param    
           ) , 
+          
           a_father_children as 
           (
-            select bbb.* , aaa.* , 'n'  b_children_is_father
+            select bbb.children_org_code , bbb.children_org_name, bbb.children_pk_org , 'n'  b_children_is_father ,
+             'n' b_father 
             from  a_all   bbb ,  a_father aaa 
             where 
             11=11
-            and  bbb.pk_father_report_org_join  (+)= aaa.father_pk_rpt_org
-          )
-          
-          select * from a_father_children ;
+            and  bbb.pk_father_report_org_join  (+)= aaa.father_pk_rpt_org     
+          )  
+          select * from a_father_children  ;
      
           
           
@@ -151,6 +159,8 @@ create or replace package zyhbrpt is
     and s.PK_RCS = rpt_org_sys_consolidate and s.PK_SVID =rpt_org_sys_consolidate_v ; 
     
    type nt_father_org_with_children is table of cur_father_org_with_children%rowtype ;  
+   
+   
    
    
    
@@ -208,7 +218,7 @@ create or replace package body zyhbrpt is
          
        for x  in 1 .. l_nt_org_rpt_consolidate.count loop  
          for  y in 1 .. l_nt_father_org_with_children.count   loop 
-             if(  l_nt_org_rpt_consolidate(x).children_pk_report_org = l_nt_father_org_with_children(y).PK_FATHERORG ) then 
+             if(  l_nt_org_rpt_consolidate(x).children_pk_org = l_nt_father_org_with_children(y).PK_FATHERORG ) then 
                    l_nt_org_rpt_consolidate(x).b_children_is_father := 'y' ; 
                    exit;
              end if;
