@@ -20,6 +20,12 @@ create or replace package zyhbrpt is
    --default report org  consolidate  system version id 
    V_RPT_ORG_SYS_CONSOLIDATE_V constant varchar2(20) := '0001A110000000052JJX' ;
    
+   --300 charaset 
+   
+   V_300_STR  constant  org_orgs.name%type :=  'aa' ; 
+   V_40_STR   constant  org_orgs.code%type :=  'bb' ; 
+   V_20_STR   constant  varchar2(20) :=  'bb' ; 
+   
    
    -- report org  info without children ,single row
    
@@ -181,6 +187,36 @@ create or replace package zyhbrpt is
    type nt_father_org_with_children is table of cur_father_org_with_children%rowtype ;  
    
    
+   --org info 
+   
+   cursor cur_org_info(org_code varchar2) 
+   is
+   select code org_code , name  org_name , pk_org  
+   from org_orgs 
+   where  code = org_code ; 
+   
+   type nt_org_info   is table of cur_org_info%rowtype ; 
+   
+   
+   
+   --fix assert  info  
+   
+   cursor cur_fa_detail(pk_org varchar2 default 1000) 
+   is
+   select   V_40_STR  org_code_  ,  V_300_STR org_name_  ,   V_20_STR pk_org_ ,  aa.* 
+   from fa_cardhistory  aa 
+   where 1=1 
+   and aa.pk_org = pk_org ; 
+   
+   
+   type  nt_fa_detail  is table of cur_fa_detail%rowtype ;
+   
+   --fix assert  detail  list 
+   function f_fa_detail(org_code  varchar2) 
+   return nt_fa_detail 
+   pipelined; 
+   
+   
    
    
    
@@ -306,29 +342,47 @@ create or replace package body zyhbrpt is
    end ; 
    
    
-     --report consolidate  org info with children   , include itselft ; 
-   /*function f_nt_org_rpt_consolidate(rpt_code_param varchar2 default V_ORG_CODE ,
-                                     rpt_org_sys_consolidate    varchar2 default  V_RPT_ORG_SYS_CONSOLIDATE , 
-                                     rpt_org_sys_consolidate_v  varchar2 default  V_RPT_ORG_SYS_CONSOLIDATE_V)  
-   return nt_org_rpt_consolidate 
+
+
+
+   --fix assert  detail  list 
+   function f_fa_detail(org_code  varchar2) 
+   return nt_fa_detail 
    pipelined
    is
-   l_nt_org_rpt_consolidate  nt_org_rpt_consolidate  := new nt_org_rpt_consolidate() ;
+   l_nt_fa_detail  nt_fa_detail := new nt_fa_detail() ; 
+   l_nt_org_info   nt_org_info  := new nt_org_info() ; 
+   l_pk_org varchar2(20) ;
+   l_org_code  org_orgs.code%type ;
+   l_org_name  org_orgs.name%type ; 
+   
    begin 
      
-       open cur_org_rpt_consolidate(rpt_code_param,rpt_org_sys_consolidate ,rpt_org_sys_consolidate_v ) ;
-         fetch cur_org_rpt_consolidate   bulk collect into l_nt_org_rpt_consolidate ;
-       close cur_org_rpt_consolidate ;
-       
-  
-       for x  in 1 .. l_nt_org_rpt_consolidate.count loop     
-          pipe row(l_nt_org_rpt_consolidate(x)) ; 
-       end loop ;
-           
-       return ;   
+  /*  open  cur_org_info(org_code); 
+    fetch cur_org_info bulk collect into l_nt_org_info; 
+    close cur_org_info ; */
+    
+    execute immediate 'select code org_code,name org_name,pk_org from org_orgs where rownum =1  and code=:1' 
+    into   l_org_code ,l_org_name, l_pk_org  using org_code ; 
+    
+
      
+    open cur_fa_detail(l_pk_org ) ; 
+    fetch cur_fa_detail bulk collect into l_nt_fa_detail ; 
+    close cur_fa_detail ; 
+    
+    for x  in 1 .. l_nt_fa_detail.count loop
+      l_nt_fa_detail(x).org_code_ := l_org_code ; 
+      l_nt_fa_detail(x).org_name_ := l_org_name ;
+      l_nt_fa_detail(x).pk_org_ := l_pk_org ;     
+      pipe row(l_nt_fa_detail(x)) ; 
+    
+    end loop; 
    
-   end ; */
+   return; 
+   
+   end ; 
+
    
 
 begin
