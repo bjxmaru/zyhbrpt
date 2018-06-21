@@ -219,7 +219,7 @@ create or replace package zyhbrpt is
    
    
    
-   --fix assert  info  
+   --fix assert  balance  info  
    
    cursor cur_fa_detail(pk_org_param varchar2 default 1000 ,  
                         end_year_param varchar2 default '2018' ,
@@ -227,7 +227,8 @@ create or replace package zyhbrpt is
                         fa_code     varchar2 default '201801290241' 
     ) 
    is
-   select   V_40_STR  org_code  ,  V_300_STR org_name  ,   V_20_STR pk_org , aa.accyear  fa_year , 
+   select   aa.newasset_flag, aa.laststate_flag ,V_40_STR  org_code  ,  V_300_STR org_name  ,   
+   V_20_STR pk_org , aa.accyear  fa_year , 
    aa.period  fa_month , bb.cate_code fa_cate_code , bb.cate_name  fa_cate_name , 
    cc.asset_code  fa_code , cc.asset_name  fa_name,  dd.style_code fa_add_reduce_style_code , 
    dd.style_name  fa_add_reduce_style_name, aa.localoriginvalue fa_value, 
@@ -262,7 +263,7 @@ create or replace package zyhbrpt is
    
    
    
-    --fix assert  info  
+    --fix assert depreciation   info  
    
    cursor cur_fa_dep(pk_org_param varchar2 default 1000 ,  
                         end_year_dep_param varchar2 default '2018',
@@ -273,10 +274,11 @@ create or replace package zyhbrpt is
                        
     ) 
    is
-   select   V_40_STR  org_code  ,  V_300_STR org_name  ,   V_20_STR pk_org , aa.accyear  fa_year , 
-   aa.period  fa_month , bb.cate_code fa_cate_code , bb.cate_name  fa_cate_name , 
+   select   V_40_STR  org_code  ,  V_300_STR org_name  ,   V_20_STR pk_org , end_year_dep_param  fa_year , 
+   end_month_dep_param  fa_month , bb.cate_code fa_cate_code , bb.cate_name  fa_cate_name , 
    cc.asset_code  fa_code , cc.asset_name  fa_name,  dd.style_code fa_add_reduce_style_code , 
-   dd.style_name  fa_add_reduce_style_name, sum(aa.localoriginvalue) fa_value, 
+   dd.style_name  fa_add_reduce_style_name, 
+   sum( decode( aa.accyear||aa.period  ,end_year_dep_param||end_month_dep_param  , aa.originvalue , 0 )) fa_value, 
    sum( decode( aa.accyear||aa.period  ,end_year_dep_param||end_month_dep_param  , aa.accudep , 0 ) ) fa_accu_dep ,
    sum(aa.depamount)  fa_curr_dep
    from  pam_addreducestyle dd , fa_card cc , fa_category bb  , fa_cardhistory  aa 
@@ -297,7 +299,7 @@ create or replace package zyhbrpt is
           ( aa.period between  '01' and end_month_dep_param   and   aa.accyear  = end_year_dep_param )
        ) 
    and aa.pk_org = pk_org_param  
-   group by aa.accyear  , aa.period   ,bb.cate_code , bb.cate_name  ,cc.asset_code  , 
+   group by bb.cate_code , bb.cate_name  ,cc.asset_code  , 
    cc.asset_name  ,  dd.style_code  , dd.style_name      ; 
    
    
