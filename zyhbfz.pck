@@ -1,4 +1,4 @@
-create or replace package zyhbrpt is
+create or replace package zyhbfz is
 
    --default org code 
    
@@ -31,12 +31,16 @@ create or replace package zyhbrpt is
 
       end_year_param  varchar2(4) , 
       end_month_param varchar2(2) ,
-      end_year   varchar2(4) , 
-      end_month  varchar2(4) ,
-      begin_year_dep varchar2(4) , 
-      begin_month_dep varchar2(2) , 
-      end_year_dep varchar2(4)   , 
-      end_month_dep varchar2(2)
+      begin_year_param varchar2(4),
+      begin_month_param varchar2(2),
+      end_year   varchar2(4) , --for bal 
+      end_month  varchar2(4) , --for bal 
+      begin_year_dep varchar2(4) ,   --for depreciation 
+      begin_month_dep varchar2(2) ,  --for depreciation 
+      end_year_dep varchar2(4)   ,  --for depreciation 
+      end_month_dep varchar2(2)  --for depreciation 
+   
+      
    
    ) ;  
    
@@ -44,33 +48,30 @@ create or replace package zyhbrpt is
    
    --fix assert depreciation   info  
    
-   cursor cur_fa_dep(pk_org_param varchar2 default 1000 ,  
-                        end_year_dep_param varchar2 default '2018',
-                        end_month_dep_param varchar2 default '02',
-                        fa_code     varchar2 default '201801290241' ,
-                        begin_year_dep_param varchar2 default '2018' ,
-                        begin_month_dep_param varchar2 default '06'        
+   cursor cur_fa(pk_org_param varchar2 default 1000 ,
+                 end_year_param varchar2 default '2018' , 
+                 end_month_param varchar2 default '06' ,
+                 end_year_begin_bal_param varchar2 default '2018',
+                 end_month_begin_bal_param varchar2  default '01' ,
+                 end_year_dep_param varchar2 default '2018',
+                 end_month_dep_param varchar2 default '02',
+                 begin_year_dep_param varchar2 default '2018' ,
+                 begin_month_dep_param varchar2 default '06'  , 
+                 fa_code     varchar2 default '201801290241'        
                        
     ) 
    is
-   with before_sum as (
-   select bb.cate_code fa_cate_code , 
+   with fa_begin_bal as (
+   select 
    case bb.cate_name  
         when V_FIX_ASSET_CATEGORY_MACHINE   then  V_FIX_ASSET_CATEGORY_MACHINE 
         when V_FIX_ASSET_CATEGORY_BUILDING  then  V_FIX_ASSET_CATEGORY_BUILDING 
         when V_FIX_ASSET_CATEGORY_VEHICLE   then  V_FIX_ASSET_CATEGORY_VEHICLE 
         else V_FIX_ASSET_CATEGORY_OTHER
-   end fa_cate_name ,       
-   cc.asset_code  fa_code , 
-   cc.asset_name  fa_name,  
-   dd.style_name  fa_add_reduce_style_name, 
-   decode( aa.accyear||aa.period  ,end_year_dep_param||end_month_dep_param  , aa.originvalue , 0 ) fa_value, 
-   decode( aa.accyear||aa.period  ,end_year_dep_param||end_month_dep_param  , aa.accudep , 0 )  fa_accu_dep ,
-   aa.depamount  fa_curr_dep
-   from  pam_addreducestyle dd , fa_card cc , fa_category bb  , fa_cardhistory  aa 
+   end fa_cate_name ,    
+   aa.localoriginvalue fa_value_begin_bal, aa.accudep fa_accu_dep_begin_bal 
+   from  fa_card cc ,  fa_category bb  , fa_cardhistory  aa 
    where 1=1 
-   and dd.dr = 0 
-   and dd.pk_addreducestyle = cc.pk_addreducestyle
    and cc.dr = 0 
    and cc.asset_code like  fa_code 
    and cc.pk_card =  aa.pk_card
@@ -80,31 +81,32 @@ create or replace package zyhbrpt is
    and aa.laststate_flag = 'N'
    and aa.asset_state = 'exist'
    and aa.dr = 0 
-   and (  ( aa.period between  begin_month_dep_param and '12' and   aa.accyear =  begin_year_dep_param )  
-          or 
-          ( aa.period between  '01' and end_month_dep_param   and   aa.accyear  = end_year_dep_param )
-       ) 
-   and aa.pk_org = pk_org_param  )
+   and aa.accyear = end_year_begin_bal_param
+   and aa.period =  end_month_begin_bal_param 
+   and aa.pk_org = pk_org_param ) ,
    
-   select V_40_STR  org_code  ,  V_300_STR org_name  ,  V_20_STR pk_org , end_year_dep_param  fa_year , 
-   end_month_dep_param  fa_month , fa_cate_name , fa_code , fa_name , 
-   fa_add_reduce_style_name, sum( fa_value) fa_value, sum( fa_accu_dep ) fa_accu_dep, 
-   sum(fa_curr_dep)  fa_curr_dep
-   from before_sum 
-   group by fa_cate_name , fa_code , fa_name , fa_add_reduce_style_name ; 
+   fa_begin_bal_sum as 
+   (
+      select fa_cate_name ,  sum( fa_value_begin_bal) fa_value_begin_bal, 
+      sum( fa_accu_dep_begin_bal ) fa_accu_dep_begin_bal
+      from fa_begin_bal 
+      group by fa_cate_name
+   
+   ) 
+ 
+   select * from fa_begin_bal_sum  ; 
+   
+   type  nt_fa  is table of cur_fa%rowtype ;
    
    
-   type  nt_fa_dep  is table of cur_fa_dep%rowtype ;
-   
-   
-   function  f_fa_dep(org_code varchar2 default 1000 ,  
+   function  f_fa(org_code varchar2 default 1000 ,  
                         end_year_param varchar2 default '2018',
                         end_month_param varchar2 default '06',
-                        fa_code     varchar2 default '201801290241' ,
                         begin_year_param varchar2 default '2018' ,
-                        begin_month_param varchar2 default '01'                 
+                        begin_month_param varchar2 default '01'  ,
+                        fa_code     varchar2 default '201801290241'                
    )
-   return nt_fa_dep 
+   return nt_fa 
    pipelined; 
  
    
@@ -115,9 +117,9 @@ create or replace package zyhbrpt is
     
 
 
-end zyhbrpt;
+end zyhbfz;
 /
-create or replace package body zyhbrpt is
+create or replace package body zyhbfz is
 
 
 
@@ -140,7 +142,8 @@ create or replace package body zyhbrpt is
     l_rcd_fa_date.end_year_param := end_year_param; 
     l_rcd_fa_date.end_month_param := end_month_param ; 
     
-    
+    l_rcd_fa_date.begin_year_param :=  begin_year_param; 
+    l_rcd_fa_date.begin_month_param := begin_month_param ; 
     
     if ((mod(to_number(end_month_param), 12) + 1) < 10) then
             l_rcd_fa_date.end_month := '0' || to_char((mod(to_number(end_month_param), 12) + 1));     
@@ -177,6 +180,8 @@ create or replace package body zyhbrpt is
     
     
     
+    
+    
     return l_rcd_fa_date; 
    
    end ; 
@@ -184,41 +189,53 @@ create or replace package body zyhbrpt is
 
 
  --fix assert  detail  list 
-   function f_fa_dep(org_code  varchar2 ,     
+   function f_fa(org_code  varchar2 ,     
                         end_year_param varchar2 default '2018' ,
                         end_month_param varchar2 default '06' ,
-                        fa_code     varchar2 default '201801290241',
                         begin_year_param varchar2 default '2018' ,
-                        begin_month_param varchar2 default '01'     
+                        begin_month_param varchar2 default '01',
+                        fa_code     varchar2 default '201801290241'  
                          ) 
-   return nt_fa_dep
+   return nt_fa
    pipelined
    is
-   l_nt_fa_dep  nt_fa_dep := new nt_fa_dep() ; 
+   l_nt_fa  nt_fa := new nt_fa() ; 
    l_pk_org varchar2(20) ;
    l_org_code  org_orgs.code%type ;
    l_org_name  org_orgs.name%type ; 
    l_rcd_fa_date  rcd_fa_date ; 
+   --l_rcd_fa_date_beign_bal rcd_fa_date; 
    begin 
      
    
     l_rcd_fa_date := f_fa_date(end_year_param , end_month_param , begin_year_param , begin_month_param) ; 
+    
+    
+    
+    --l_rcd_fa_date_beign_bal := f_fa_date( end_year_param , '01' , end_year_param , '01') ; 
+    
+    dbms_output.put_line( l_rcd_fa_date.begin_year_param || ' ' || l_rcd_fa_date.begin_month_param ) ;
     
     execute immediate  l_sql_org_info  
     into   l_org_code ,l_org_name, l_pk_org  using org_code ; 
     
 
      
-    open cur_fa_dep(l_pk_org ,l_rcd_fa_date.end_year_dep , l_rcd_fa_date.end_month_dep , fa_code , 
-                    l_rcd_fa_date.begin_year_dep , l_rcd_fa_date.begin_month_dep ) ; 
-    fetch cur_fa_dep bulk collect into l_nt_fa_dep ; 
-    close cur_fa_dep ; 
+    open cur_fa(l_pk_org , l_rcd_fa_date.end_year , l_rcd_fa_date.end_month , 
+                l_rcd_fa_date.begin_year_param , l_rcd_fa_date.begin_month_param,
+                l_rcd_fa_date.end_year_dep , l_rcd_fa_date.end_month_dep , 
+                l_rcd_fa_date.begin_year_dep , l_rcd_fa_date.begin_month_dep ,fa_code 
+                 ) ; 
+    fetch cur_fa bulk collect into l_nt_fa ; 
+    close cur_fa ; 
     
-    for x  in 1 .. l_nt_fa_dep.count loop
-      l_nt_fa_dep(x).org_code := l_org_code ; 
-      l_nt_fa_dep(x).org_name := l_org_name ;
-      l_nt_fa_dep(x).pk_org := l_pk_org ;     
-      pipe row(l_nt_fa_dep(x)) ; 
+    for x  in 1 .. l_nt_fa.count loop
+      /*
+      l_nt_fa(x).org_code := l_org_code ; 
+      l_nt_fa(x).org_name := l_org_name ;
+      l_nt_fa(x).pk_org := l_pk_org ;  
+      */   
+      pipe row(l_nt_fa(x)) ; 
     
     end loop; 
    
@@ -228,9 +245,9 @@ create or replace package body zyhbrpt is
      
         when others   then 
    
-        if( cur_fa_dep%isopen ) then 
+        if( cur_fa%isopen ) then 
         
-           close cur_fa_dep ; 
+           close cur_fa ; 
         
         end if; 
    end ; 
@@ -239,5 +256,5 @@ create or replace package body zyhbrpt is
 begin
   
    null; 
-end zyhbrpt;
+end zyhbfz;
 /
