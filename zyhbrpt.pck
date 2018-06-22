@@ -79,10 +79,11 @@ create or replace package zyhbrpt is
      when V_FIX_ASSET_ADD_CONSTRUCTURE then V_FIX_ASSET_ADD_CONSTRUCTURE
      else  V_FIX_ASSET_ADD_OTHER
    end fa_add_reduce_style_name ,
-   decode( aa.accyear||aa.period  ,begin_year_param||begin_month_param  , decode( aa.newasset_flag ,1,0 , aa.localoriginvalue) , 0 ) fa_value_begin, 
-   decode( aa.accyear||aa.period  ,begin_year_param||begin_month_param ,  decode( aa.newasset_flag ,1,0 , aa.accudep) , 0 )  fa_accu_dep_begin ,
+   decode( aa.accyear||aa.period  ,begin_year_param||begin_month_param  , decode( aa.newasset_flag ,1, 0 , decode(  aa.asset_state ,'reduce' , 0  , aa.localoriginvalue)) , 0 ) fa_value_begin, 
+   decode( aa.accyear||aa.period  ,begin_year_param||begin_month_param ,  decode( aa.newasset_flag ,1,0 , decode( aa.asset_state ,'reduce' , 0 ,aa.accudep)) , 0 )  fa_accu_dep_begin ,
    0 fa_curr_dep_begin ,  
    decode(aa.accyear||aa.period  ,  end_year_dep_param||end_month_dep_param , 0 ,decode( aa.newasset_flag ,1, aa.localoriginvalue , 0)  ) fa_value_add,
+   
 
    decode( aa.accyear||aa.period  ,end_year_dep_param||end_month_dep_param  , decode( aa.newasset_flag ,1,0 ,aa.localoriginvalue) , 0 ) fa_value_end, 
    decode( aa.accyear||aa.period  ,end_year_dep_param||end_month_dep_param  , decode( aa.newasset_flag ,1,0 ,aa.accudep) , 0 )  fa_accu_dep_end ,
