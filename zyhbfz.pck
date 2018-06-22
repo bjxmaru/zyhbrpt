@@ -83,8 +83,23 @@ create or replace package zyhbfz is
    decode( aa.accyear||aa.period  ,begin_year_param||begin_month_param ,  decode( aa.newasset_flag ,1,0 , 
            decode( aa.asset_state ,'reduce' , 0 ,aa.accudep)) , 0 )  fa_accu_dep_begin ,
    0 fa_curr_dep_begin ,
-   decode(aa.accyear||aa.period  ,  end_year_dep_param||end_month_dep_param , 0 ,decode( aa.newasset_flag ,1, aa.localoriginvalue , 0)  ) fa_value_add,
-   decode(aa.accyear||aa.period  ,  end_year_dep_param||end_month_dep_param , 0 ,decode( aa.newasset_flag ,1, aa.accudep , 0)  ) fa_accu_dep_add,
+   case  
+      when   aa.accyear||aa.period <> end_year_dep_param||end_month_dep_param  
+             and  aa.newasset_flag =1 then  aa.localoriginvalue 
+      when   aa.accyear||aa.period < end_year_dep_param||end_month_dep_param   
+             and  aa.accyear||aa.period <> '201801'   
+             and    aa.newasset_flag = 0 then aa.localoriginvalue  
+      else  0 
+   end fa_value_add    ,  
+   
+   case  
+      when   aa.accyear||aa.period <> end_year_dep_param||end_month_dep_param  
+             and  aa.newasset_flag =1 then   aa.accudep
+      when   aa.accyear||aa.period <> end_year_dep_param||end_month_dep_param   
+             and  aa.accyear||aa.period <> '201801'   
+             and    aa.newasset_flag = 0 then  aa.accudep
+      else  0 
+   end fa_accu_dep_add  ,  
    
    decode( aa.accyear||aa.period  ,begin_year_param||begin_month_param , 0 , 
            decode(  aa.asset_state ,'reduce' ,  aa.localoriginvalue , 0 ) )     fa_value_reduce , 
@@ -127,19 +142,19 @@ create or replace package zyhbfz is
    (
    
      select aaa.fa_cate_name ,aaa.fa_code ,aaa.fa_name  ,
-     decode( bbb.style_name , V_FIX_ASSET_ADD_PURCHASE , aaa.fa_value_add , 0 ) fa_value_add_purchase ,
-     decode( bbb.style_name , V_FIX_ASSET_ADD_PURCHASE , aaa.fa_accu_dep_add , 0 ) fa_accu_dep_add_purchase ,
-     decode( bbb.style_name , V_FIX_ASSET_ADD_CONSTRUCTURE , aaa.fa_value_add , 0 ) fa_value_add_constructure ,
-     decode( bbb.style_name , V_FIX_ASSET_ADD_CONSTRUCTURE , aaa.fa_accu_dep_add , 0 ) fa_accu_dep_add_constructure , 
-     case  bbb.style_name 
-            when V_FIX_ASSET_ADD_PURCHASE   then  0  
-            when V_FIX_ASSET_ADD_CONSTRUCTURE  then  0 
+     decode( bbb.style_name , V_FIX_ASSET_ADD_PURCHASE ,  decode(  aaa.newasset_flag  , 0  , 0 , aaa.fa_value_add) , 0 ) fa_value_add_purchase ,
+     decode( bbb.style_name , V_FIX_ASSET_ADD_PURCHASE ,  decode(  aaa.newasset_flag  , 0  , 0 ,aaa.fa_accu_dep_add) , 0 ) fa_accu_dep_add_purchase ,
+     decode( bbb.style_name , V_FIX_ASSET_ADD_CONSTRUCTURE ,  decode(  aaa.newasset_flag  , 0  , 0 ,aaa.fa_value_add) , 0 ) fa_value_add_constructure ,
+     decode( bbb.style_name , V_FIX_ASSET_ADD_CONSTRUCTURE ,  decode(  aaa.newasset_flag  , 0  , 0 , aaa.fa_accu_dep_add) , 0 ) fa_accu_dep_add_constructure , 
+     case  
+            when bbb.style_name = V_FIX_ASSET_ADD_PURCHASE and aaa.newasset_flag = 1   then  0  
+            when bbb.style_name = V_FIX_ASSET_ADD_CONSTRUCTURE  and aaa.newasset_flag = 1  then  0 
             else  aaa.fa_value_add 
      end fa_value_add_other,   
-     case  bbb.style_name 
-            when V_FIX_ASSET_ADD_PURCHASE  then  0  
-            when V_FIX_ASSET_ADD_CONSTRUCTURE  then 0 
-            else  aaa.fa_accu_dep_add 
+     case  
+           when bbb.style_name = V_FIX_ASSET_ADD_PURCHASE and aaa.newasset_flag = 1  then  0  
+           when bbb.style_name = V_FIX_ASSET_ADD_CONSTRUCTURE  and aaa.newasset_flag = 1  then 0 
+           else  aaa.fa_accu_dep_add 
      end fa_accu_dep_add_other
      from pam_addreducestyle bbb  , bal_dep_before_sum   aaa
      where 
