@@ -74,6 +74,8 @@ create or replace package zyhbrpt is
    decode( aa.accyear||aa.period  ,begin_year_param||begin_month_param  , decode( aa.newasset_flag ,1,0 , aa.localoriginvalue) , 0 ) fa_value_begin, 
    decode( aa.accyear||aa.period  ,begin_year_param||begin_month_param ,  decode( aa.newasset_flag ,1,0 , aa.accudep) , 0 )  fa_accu_dep_begin ,
    0 fa_curr_dep_begin ,  
+   decode(aa.accyear||aa.period  ,  end_year_dep_param||end_month_dep_param , 0 ,decode( aa.newasset_flag ,1, aa.localoriginvalue , 0)  ) fa_value_add,
+
    decode( aa.accyear||aa.period  ,end_year_dep_param||end_month_dep_param  , decode( aa.newasset_flag ,1,0 ,aa.localoriginvalue) , 0 ) fa_value_end, 
    decode( aa.accyear||aa.period  ,end_year_dep_param||end_month_dep_param  , decode( aa.newasset_flag ,1,0 ,aa.accudep) , 0 )  fa_accu_dep_end ,
    case 
@@ -102,7 +104,8 @@ create or replace package zyhbrpt is
    (
    select fa_cate_name , fa_code , fa_name ,  
    fa_add_reduce_style_name,  sum( fa_value_begin) fa_value_begin, sum( fa_accu_dep_begin ) fa_accu_dep_begin, 
-   sum(fa_curr_dep_begin)  fa_curr_dep_begin ,  sum( fa_value_end) fa_value_end, sum( fa_accu_dep_end ) fa_accu_dep_end, 
+   sum(fa_curr_dep_begin)  fa_curr_dep_begin ,  sum(fa_value_add)  fa_value_add ,
+   sum( fa_value_end) fa_value_end, sum( fa_accu_dep_end ) fa_accu_dep_end, 
    sum(fa_curr_dep_end)  fa_curr_dep_end 
    from bal_dep_before_sum 
    group by fa_cate_name , fa_code , fa_name , fa_add_reduce_style_name 

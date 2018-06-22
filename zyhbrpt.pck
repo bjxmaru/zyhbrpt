@@ -23,6 +23,10 @@ create or replace package zyhbrpt is
    V_FIX_ASSET_CATEGORY_VEHICLE constant  fa_category.cate_name%type:= '运输工具' ;
    V_FIX_ASSET_CATEGORY_OTHER constant  fa_category.cate_name%type:= '电子设备及其他' ;
    
+   --fixed asset add style name 
+   V_FIX_ASSET_ADD_PURCHASE  constant  pam_addreducestyle.style_name%type := '直接购入' ;
+   V_FIX_ASSET_ADD_CONSTRUCTURE  constant  pam_addreducestyle.style_name%type := '在建工程转入' ;
+   V_FIX_ASSET_ADD_OTHER  constant  pam_addreducestyle.style_name%type := '其他' ;
 
    
    -- calculate the date for fixed asset  info 
@@ -70,13 +74,16 @@ create or replace package zyhbrpt is
    end fa_cate_name ,       
    cc.asset_code  fa_code , 
    cc.asset_name  fa_name,  
-   dd.style_name  fa_add_reduce_style_name, 
+   case dd.style_name 
+     when V_FIX_ASSET_ADD_PURCHASE then  V_FIX_ASSET_ADD_PURCHASE 
+     when V_FIX_ASSET_ADD_CONSTRUCTURE then V_FIX_ASSET_ADD_CONSTRUCTURE
+     else  V_FIX_ASSET_ADD_OTHER
+   end fa_add_reduce_style_name ,
    decode( aa.accyear||aa.period  ,begin_year_param||begin_month_param  , decode( aa.newasset_flag ,1,0 , aa.localoriginvalue) , 0 ) fa_value_begin, 
    decode( aa.accyear||aa.period  ,begin_year_param||begin_month_param ,  decode( aa.newasset_flag ,1,0 , aa.accudep) , 0 )  fa_accu_dep_begin ,
    0 fa_curr_dep_begin ,  
-   
-   
-   
+   decode(aa.accyear||aa.period  ,  end_year_dep_param||end_month_dep_param , 0 ,decode( aa.newasset_flag ,1, aa.localoriginvalue , 0)  ) fa_value_add,
+
    decode( aa.accyear||aa.period  ,end_year_dep_param||end_month_dep_param  , decode( aa.newasset_flag ,1,0 ,aa.localoriginvalue) , 0 ) fa_value_end, 
    decode( aa.accyear||aa.period  ,end_year_dep_param||end_month_dep_param  , decode( aa.newasset_flag ,1,0 ,aa.accudep) , 0 )  fa_accu_dep_end ,
    case 
@@ -105,7 +112,8 @@ create or replace package zyhbrpt is
    (
    select fa_cate_name , fa_code , fa_name ,  
    fa_add_reduce_style_name,  sum( fa_value_begin) fa_value_begin, sum( fa_accu_dep_begin ) fa_accu_dep_begin, 
-   sum(fa_curr_dep_begin)  fa_curr_dep_begin ,  sum( fa_value_end) fa_value_end, sum( fa_accu_dep_end ) fa_accu_dep_end, 
+   sum(fa_curr_dep_begin)  fa_curr_dep_begin ,  sum(fa_value_add)  fa_value_add ,
+   sum( fa_value_end) fa_value_end, sum( fa_accu_dep_end ) fa_accu_dep_end, 
    sum(fa_curr_dep_end)  fa_curr_dep_end 
    from bal_dep_before_sum 
    group by fa_cate_name , fa_code , fa_name , fa_add_reduce_style_name 
