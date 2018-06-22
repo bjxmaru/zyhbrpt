@@ -27,6 +27,9 @@ create or replace package zyhbrpt is
    V_FIX_ASSET_ADD_PURCHASE  constant  pam_addreducestyle.style_name%type := '直接购入' ;
    V_FIX_ASSET_ADD_CONSTRUCTURE  constant  pam_addreducestyle.style_name%type := '在建工程转入' ;
    V_FIX_ASSET_ADD_OTHER  constant  pam_addreducestyle.style_name%type := '其他' ;
+   
+   V_FIX_ASSET_REDUCE_USELESS  constant  pam_addreducestyle.style_name%type := '报废' ;
+   V_FIX_ASSET_REDUCE_OTHER  constant  pam_addreducestyle.style_name%type := '其他' ;
 
    
    -- calculate the date for fixed asset  info 
@@ -74,14 +77,12 @@ create or replace package zyhbrpt is
    end fa_cate_name ,       
    cc.asset_code  fa_code , 
    cc.asset_name  fa_name,  
-   case dd.style_name 
-     when V_FIX_ASSET_ADD_PURCHASE then  V_FIX_ASSET_ADD_PURCHASE 
-     when V_FIX_ASSET_ADD_CONSTRUCTURE then V_FIX_ASSET_ADD_CONSTRUCTURE
-     else  V_FIX_ASSET_ADD_OTHER
-   end fa_add_reduce_style_name ,
-   decode( aa.accyear||aa.period  ,begin_year_param||begin_month_param  , decode( aa.newasset_flag ,1, 0 , decode(  aa.asset_state ,'reduce' , 0  , aa.localoriginvalue)) , 0 ) fa_value_begin, 
-   decode( aa.accyear||aa.period  ,begin_year_param||begin_month_param ,  decode( aa.newasset_flag ,1,0 , decode( aa.asset_state ,'reduce' , 0 ,aa.accudep)) , 0 )  fa_accu_dep_begin ,
-   0 fa_curr_dep_begin ,  
+   aa.localoriginvalue , aa.accudep , cc.pk_addreducestyle ,aa.newasset_flag ,aa.asset_state ,aa.pk_card ,
+   decode( aa.accyear||aa.period  ,begin_year_param||begin_month_param  , 
+           decode( aa.newasset_flag ,1, 0 , decode(  aa.asset_state ,'reduce' , 0  , aa.localoriginvalue)) , 0 ) fa_value_begin, 
+   decode( aa.accyear||aa.period  ,begin_year_param||begin_month_param ,  decode( aa.newasset_flag ,1,0 , 
+           decode( aa.asset_state ,'reduce' , 0 ,aa.accudep)) , 0 )  fa_accu_dep_begin ,
+   0 fa_curr_dep_begin ,
    decode(aa.accyear||aa.period  ,  end_year_dep_param||end_month_dep_param , 0 ,decode( aa.newasset_flag ,1, aa.localoriginvalue , 0)  ) fa_value_add,
    decode(aa.accyear||aa.period  ,  end_year_dep_param||end_month_dep_param , 0 ,decode( aa.newasset_flag ,1, aa.accudep , 0)  ) fa_accu_dep_add,
    
@@ -89,18 +90,18 @@ create or replace package zyhbrpt is
            decode(  aa.asset_state ,'reduce' ,  aa.localoriginvalue , 0 ) )     fa_value_reduce , 
    decode( aa.accyear||aa.period  ,begin_year_param||begin_month_param , 0 , 
            decode(  aa.asset_state ,'reduce' ,  aa.accudep , 0 ) )     fa_accu_dep_reduce ,   
-
-   decode( aa.accyear||aa.period  ,end_year_dep_param||end_month_dep_param  , decode( aa.newasset_flag ,1,0 ,  decode(  aa.asset_state ,'reduce' , 0  ,aa.localoriginvalue) ), 0 ) fa_value_end, 
-   decode( aa.accyear||aa.period  ,end_year_dep_param||end_month_dep_param  , decode( aa.newasset_flag ,1,0 ,   decode(  aa.asset_state ,'reduce' , 0  ,aa.accudep)) , 0 )  fa_accu_dep_end ,
+   decode( aa.accyear||aa.period  ,end_year_dep_param||end_month_dep_param  , 
+           decode( aa.newasset_flag ,1,0 ,  decode(  aa.asset_state ,'reduce' , 0  ,aa.localoriginvalue) ), 0 ) fa_value_end, 
+   decode( aa.accyear||aa.period  ,end_year_dep_param||end_month_dep_param  , decode( aa.newasset_flag ,1,0 ,   
+           decode(  aa.asset_state ,'reduce' , 0  ,aa.accudep)) , 0 )  fa_accu_dep_end ,
    case 
        when 
             aa.accyear||aa.period >= begin_year_dep_param || begin_month_dep_param  then   aa.depamount 
        else  0 
    end   fa_curr_dep_end 
-   from  pam_addreducestyle dd , fa_card cc , fa_category bb  , fa_cardhistory  aa 
+ 
+   from   fa_card cc , fa_category bb  , fa_cardhistory  aa 
    where 1=1 
-   and dd.dr = 0 
-   and dd.pk_addreducestyle = cc.pk_addreducestyle
    and cc.dr = 0 
    and cc.asset_code like  fa_code 
    and cc.pk_card =  aa.pk_card
@@ -112,26 +113,462 @@ create or replace package zyhbrpt is
    and aa.dr = 0 
    and  aa.accyear||aa.period  <= end_year_dep_param ||end_month_dep_param
    and  aa.accyear||aa.period  >= begin_year_param || begin_month_param 
-   and aa.pk_org = pk_org_param  ) , 
+   and aa.pk_org = pk_org_param  
+   
+   ) , 
    
    bal_dep_sum as 
    (
-   select fa_cate_name , fa_code , fa_name ,  
-   fa_add_reduce_style_name,  sum( fa_value_begin) fa_value_begin, sum( fa_accu_dep_begin ) fa_accu_dep_begin, 
-   sum(fa_curr_dep_begin)  fa_curr_dep_begin ,  sum(fa_value_add)  fa_value_add ,sum(fa_accu_dep_add)  fa_accu_dep_add ,
-   sum(fa_value_reduce)  fa_value_reduce ,sum(fa_accu_dep_reduce)  fa_accu_dep_reduce ,
-   sum( fa_value_end) fa_value_end, sum( fa_accu_dep_end ) fa_accu_dep_end, 
-   sum(fa_curr_dep_end)  fa_curr_dep_end 
-   from bal_dep_before_sum 
-   group by fa_cate_name , fa_code , fa_name , fa_add_reduce_style_name 
+       select * from bal_dep_before_sum 
+      
+   )  , 
    
-   ) 
-  
+   fa_add as 
+   (
    
+     select aaa.fa_cate_name ,aaa.fa_code ,aaa.fa_name  ,
+     decode( bbb.style_name , V_FIX_ASSET_ADD_PURCHASE , aaa.fa_value_add , 0 ) fa_value_add_purchase ,
+     decode( bbb.style_name , V_FIX_ASSET_ADD_PURCHASE , aaa.fa_accu_dep_add , 0 ) fa_accu_dep_add_purchase ,
+     decode( bbb.style_name , V_FIX_ASSET_ADD_CONSTRUCTURE , aaa.fa_value_add , 0 ) fa_value_add_constructure ,
+     decode( bbb.style_name , V_FIX_ASSET_ADD_CONSTRUCTURE , aaa.fa_accu_dep_add , 0 ) fa_accu_dep_add_constructure , 
+     case  bbb.style_name 
+            when V_FIX_ASSET_ADD_PURCHASE   then  0  
+            when V_FIX_ASSET_ADD_CONSTRUCTURE  then  0 
+            else  aaa.fa_value_add 
+     end fa_value_add_other,   
+     case  bbb.style_name 
+            when V_FIX_ASSET_ADD_PURCHASE  then  0  
+            when V_FIX_ASSET_ADD_CONSTRUCTURE  then 0 
+            else  aaa.fa_accu_dep_add 
+     end fa_accu_dep_add_other
+     from pam_addreducestyle bbb  , bal_dep_before_sum   aaa
+     where 
+     1=1
+     and bbb.dr = 0 
+     and bbb.pk_addreducestyle  = aaa.pk_addreducestyle
+     and fa_value_add > 0 
+     and newasset_flag  =1
+    
+   ) , 
    
+   fa_reduce as 
+   (
    
-   select * from bal_dep_sum ; 
+     select mmm.fa_cate_name ,mmm.fa_code ,mmm.fa_name ,
+     decode(ooo.style_name  , V_FIX_ASSET_REDUCE_USELESS , nnn.red_localoriginvalue , 0 )  fa_value_reduce_useless , 
+     decode(ooo.style_name  , V_FIX_ASSET_REDUCE_USELESS , nnn.red_accudep , 0 )  fa_accu_dep_reduce_useless ,
+     case  ooo.style_name 
+            when V_FIX_ASSET_REDUCE_USELESS   then  0  
+            else   nnn.red_localoriginvalue
+     end fa_value_reduce_other,   
+     case  ooo.style_name 
+            when V_FIX_ASSET_REDUCE_USELESS   then  0  
+            else  nnn.red_accudep  
+     end fa_accu_dep_reduce_other
+     from  pam_addreducestyle ooo ,  fa_reduce_b nnn  , bal_dep_before_sum  mmm
+     where 1=1
+     and ooo.pk_addreducestyle = nnn.pk_reducestyle
+     and nnn.pk_card = nnn.pk_card 
+     and mmm.fa_value_reduce > 0
+     and mmm.asset_state = 'reduce' 
    
+   )  ,
+   
+   fa_total as 
+   (
+   
+      select fa_cate_name , fa_code ,fa_name , 
+             fa_value_begin , 
+             decode(fa_cate_name ,V_FIX_ASSET_CATEGORY_MACHINE , fa_value_begin , 0 ) fa_value_begin_machine ,
+             decode(fa_cate_name ,V_FIX_ASSET_CATEGORY_BUILDING , fa_value_begin , 0 ) fa_value_begin_building ,
+             decode(fa_cate_name ,V_FIX_ASSET_CATEGORY_VEHICLE, fa_value_begin , 0 ) fa_value_begin_vehicle ,
+             decode(fa_cate_name ,V_FIX_ASSET_CATEGORY_OTHER , fa_value_begin , 0 ) fa_value_begin_other , 
+             fa_accu_dep_begin , 
+             decode(fa_cate_name ,V_FIX_ASSET_CATEGORY_MACHINE , fa_accu_dep_begin , 0 ) fa_accu_dep_begin_machine ,
+             decode(fa_cate_name ,V_FIX_ASSET_CATEGORY_BUILDING , fa_accu_dep_begin , 0 ) fa_accu_dep_begin_building ,
+             decode(fa_cate_name ,V_FIX_ASSET_CATEGORY_VEHICLE, fa_accu_dep_begin , 0 ) fa_accu_dep_begin_vehicle ,
+             decode(fa_cate_name ,V_FIX_ASSET_CATEGORY_OTHER , fa_accu_dep_begin , 0 ) fa_accu_dep_begin_other , 
+             fa_value_add  ,
+             fa_accu_dep_add  , 
+             0  fa_value_add_purchase , 
+             0 fa_value_add_purchase_machine,
+             0 fa_value_add_purchase_building,
+             0 fa_value_add_purchase_vehicle,
+             0 fa_value_add_purchase_other, 
+             0 fa_accu_dep_add_purchase , 
+             0 fa_accu_dep_add_pur_machine , 
+             0 fa_accu_dep_add_pur_building , 
+             0 fa_accu_dep_add_pur_vehicle , 
+             0 fa_accu_dep_add_pur_other , 
+         
+             0  fa_value_add_constructure  , 
+             0  fa_value_add_cons_mechine  ,  
+             0  fa_value_add_cons_building  ,  
+             0  fa_value_add_cons_vehicle  , 
+             0  fa_value_add_cons_other  ,   
+                 
+             0 fa_accu_dep_add_constructure,
+             0 fa_accu_dep_add_cons_machine,
+             0 fa_accu_dep_add_cons_building,
+             0 fa_accu_dep_add_cons_vehicle,
+             0 fa_accu_dep_add_cons_other,
+             
+             
+             0  fa_value_add_other  ,  
+             0  fa_value_add_other_machine  ,
+             0  fa_value_add_other_building  ,
+             0  fa_value_add_other_vehicle  ,
+             0  fa_value_add_other_other  ,
+             
+             0 fa_accu_dep_add_other, 
+             0 fa_accu_dep_add_other_machine, 
+             0 fa_accu_dep_add_other_building, 
+             0 fa_accu_dep_add_other_vehicle, 
+             0 fa_accu_dep_add_other_other, 
+             
+             fa_value_reduce ,
+             fa_accu_dep_reduce ,
+             
+             0  fa_value_reduce_useless , 
+             0  fa_value_red_useless_machine ,
+             0  fa_value_red_useless_building , 
+             0  fa_value_red_useless_vehicle , 
+             0  fa_value_red_useless_other , 
+             
+             0 fa_accu_dep_reduce_useless , 
+             0 fa_accu_dep_red_ul_machine , 
+             0 fa_accu_dep_red_ul_building ,
+             0 fa_accu_dep_red_ul_vehicle ,
+             0 fa_accu_dep_red_ul_other ,
+             
+             
+             0 fa_value_reduce_other, 
+             0 fa_value_red_other_machine,
+             0 fa_value_red_other_building,
+             0 fa_value_red_other_vehicle,
+             0 fa_value_red_other_other, 
+             
+             0 fa_accu_dep_reduce_other, 
+             0 fa_accu_dep_red_other_machine, 
+             0 fa_accu_dep_red_other_building, 
+             0 fa_accu_dep_red_other_vehicle, 
+             0 fa_accu_dep_red_other_other, 
+             
+             fa_value_end  , 
+             decode(fa_cate_name ,V_FIX_ASSET_CATEGORY_MACHINE , fa_value_end , 0 ) fa_value_end_machine ,
+             decode(fa_cate_name ,V_FIX_ASSET_CATEGORY_BUILDING , fa_value_end , 0 ) fa_value_end_building ,
+             decode(fa_cate_name ,V_FIX_ASSET_CATEGORY_VEHICLE, fa_value_end , 0 ) fa_value_end_vehicle ,
+             decode(fa_cate_name ,V_FIX_ASSET_CATEGORY_OTHER , fa_value_end , 0 ) fa_value_end_other ,
+             fa_accu_dep_end  ,
+             decode(fa_cate_name ,V_FIX_ASSET_CATEGORY_MACHINE , fa_accu_dep_end , 0 ) fa_accu_dep_end_machine ,
+             decode(fa_cate_name ,V_FIX_ASSET_CATEGORY_BUILDING , fa_accu_dep_end , 0 ) fa_accu_dep_end_building ,
+             decode(fa_cate_name ,V_FIX_ASSET_CATEGORY_VEHICLE, fa_accu_dep_end , 0 ) fa_accu_dep_end_vehicle ,
+             decode(fa_cate_name ,V_FIX_ASSET_CATEGORY_OTHER , fa_accu_dep_end , 0 ) fa_accu_dep_end_other  , 
+             
+             fa_curr_dep_end , 
+             decode(fa_cate_name ,V_FIX_ASSET_CATEGORY_MACHINE , fa_curr_dep_end , 0 ) fa_curr_dep_end_machine ,
+             decode(fa_cate_name ,V_FIX_ASSET_CATEGORY_BUILDING , fa_curr_dep_end , 0 )fa_curr_dep_end_building ,
+             decode(fa_cate_name ,V_FIX_ASSET_CATEGORY_VEHICLE, fa_curr_dep_end , 0 ) fa_curr_dep_end_vehicle ,
+             decode(fa_cate_name ,V_FIX_ASSET_CATEGORY_OTHER , fa_curr_dep_end , 0 ) fa_curr_dep_end_other  
+             
+      from bal_dep_before_sum  
+      
+      union all 
+      
+        select fa_cate_name , fa_code ,fa_name , 
+             0 fa_value_begin , 
+             0 fa_value_begin_machine ,
+             0 fa_value_begin_building ,
+             0 fa_value_begin_vehicle ,
+             0 fa_value_begin_other , 
+             0 fa_accu_dep_begin , 
+             0 fa_accu_dep_begin_machine ,
+             0 fa_accu_dep_begin_building ,
+             0 fa_accu_dep_begin_vehicle ,
+             0 fa_accu_dep_begin_other , 
+             0 fa_value_add  ,
+             0 fa_accu_dep_add  , 
+             fa_value_add_purchase , 
+             decode(fa_cate_name ,V_FIX_ASSET_CATEGORY_MACHINE , fa_value_add_purchase , 0 ) fa_value_add_purchase_machine,
+             decode(fa_cate_name ,V_FIX_ASSET_CATEGORY_BUILDING , fa_value_add_purchase , 0 ) fa_value_add_purchase_building,
+             decode(fa_cate_name ,V_FIX_ASSET_CATEGORY_VEHICLE , fa_value_add_purchase , 0 ) fa_value_add_purchase_vehicle,
+             decode(fa_cate_name ,V_FIX_ASSET_CATEGORY_OTHER , fa_value_add_purchase , 0 ) fa_value_add_purchase_other, 
+             fa_accu_dep_add_purchase , 
+             decode(fa_cate_name ,V_FIX_ASSET_CATEGORY_MACHINE , fa_accu_dep_add_purchase , 0 ) fa_accu_dep_add_pur_machine , 
+             decode(fa_cate_name ,V_FIX_ASSET_CATEGORY_BUILDING , fa_accu_dep_add_purchase , 0 ) fa_accu_dep_add_pur_building , 
+             decode(fa_cate_name ,V_FIX_ASSET_CATEGORY_VEHICLE , fa_accu_dep_add_purchase , 0 ) fa_accu_dep_add_pur_vehicle , 
+             decode(fa_cate_name ,V_FIX_ASSET_CATEGORY_OTHER , fa_accu_dep_add_purchase , 0 ) fa_accu_dep_add_pur_other , 
+         
+             fa_value_add_constructure  , 
+             decode(fa_cate_name ,V_FIX_ASSET_CATEGORY_MACHINE , fa_value_add_constructure , 0 )  fa_value_add_cons_mechine  ,  
+             decode(fa_cate_name ,V_FIX_ASSET_CATEGORY_BUILDING , fa_value_add_constructure , 0 )  fa_value_add_cons_building  ,  
+             decode(fa_cate_name ,V_FIX_ASSET_CATEGORY_VEHICLE , fa_value_add_constructure , 0 )  fa_value_add_cons_vehicle  , 
+             decode(fa_cate_name ,V_FIX_ASSET_CATEGORY_OTHER , fa_value_add_constructure , 0 )  fa_value_add_cons_other  ,   
+                 
+             fa_accu_dep_add_constructure,
+             decode(fa_cate_name ,V_FIX_ASSET_CATEGORY_MACHINE , fa_accu_dep_add_constructure , 0 )  fa_accu_dep_add_cons_machine,
+             decode(fa_cate_name ,V_FIX_ASSET_CATEGORY_BUILDING , fa_accu_dep_add_constructure , 0 ) fa_accu_dep_add_cons_building,
+             decode(fa_cate_name ,V_FIX_ASSET_CATEGORY_VEHICLE , fa_accu_dep_add_constructure , 0 ) fa_accu_dep_add_cons_vehicle,
+             decode(fa_cate_name ,V_FIX_ASSET_CATEGORY_OTHER , fa_accu_dep_add_constructure , 0 ) fa_accu_dep_add_cons_other,
+             
+             
+             fa_value_add_other  ,  
+             decode(fa_cate_name ,V_FIX_ASSET_CATEGORY_MACHINE , fa_value_add_other , 0 )  fa_value_add_other_machine  ,
+             decode(fa_cate_name ,V_FIX_ASSET_CATEGORY_BUILDING , fa_value_add_other , 0 )  fa_value_add_other_building  ,
+             decode(fa_cate_name ,V_FIX_ASSET_CATEGORY_VEHICLE , fa_value_add_other , 0 )  fa_value_add_other_vehicle  ,
+             decode(fa_cate_name ,V_FIX_ASSET_CATEGORY_OTHER , fa_value_add_other , 0 )  fa_value_add_other_other  ,
+             
+             fa_accu_dep_add_other, 
+             decode(fa_cate_name ,V_FIX_ASSET_CATEGORY_MACHINE , fa_accu_dep_add_other , 0 ) fa_accu_dep_add_other_machine, 
+             decode(fa_cate_name ,V_FIX_ASSET_CATEGORY_BUILDING , fa_accu_dep_add_other , 0 ) fa_accu_dep_add_other_building, 
+             decode(fa_cate_name ,V_FIX_ASSET_CATEGORY_VEHICLE , fa_accu_dep_add_other , 0 ) fa_accu_dep_add_other_vehicle, 
+             decode(fa_cate_name ,V_FIX_ASSET_CATEGORY_OTHER , fa_accu_dep_add_other , 0 ) fa_accu_dep_add_other_other, 
+             
+             0 fa_value_reduce ,
+             0 fa_accu_dep_reduce ,
+             
+             0  fa_value_reduce_useless , 
+             0  fa_value_red_useless_machine ,
+             0  fa_value_red_useless_building , 
+             0  fa_value_red_useless_vehicle , 
+             0  fa_value_red_useless_other , 
+             
+             0 fa_accu_dep_reduce_useless , 
+             0 fa_accu_dep_red_ul_machine , 
+             0 fa_accu_dep_red_ul_building ,
+             0 fa_accu_dep_red_ul_vehicle ,
+             0 fa_accu_dep_red_ul_other ,
+             
+             
+             0 fa_value_reduce_other, 
+             0 fa_value_red_other_machine,
+             0 fa_value_red_other_building,
+             0 fa_value_red_other_vehicle,
+             0 fa_value_red_other_other, 
+             
+             0 fa_accu_dep_reduce_other, 
+             0 fa_accu_dep_red_other_machine, 
+             0 fa_accu_dep_red_other_building, 
+             0 fa_accu_dep_red_other_vehicle, 
+             0 fa_accu_dep_red_other_other, 
+             
+             0 fa_value_end  , 
+             0 fa_value_end_machine ,
+             0 fa_value_end_building ,
+             0 fa_value_end_vehicle ,
+             0 fa_value_end_other ,
+             0 fa_accu_dep_end  ,
+             0 fa_accu_dep_end_machine ,
+             0 fa_accu_dep_end_building ,
+             0 fa_accu_dep_end_vehicle ,
+             0 fa_accu_dep_end_other  , 
+             
+             
+             0 fa_curr_dep_end , 
+             0 fa_curr_dep_end_machine ,
+             0 fa_curr_dep_end_building ,
+             0 fa_curr_dep_end_vehicle ,
+             0 fa_curr_dep_end_other   
+      from  fa_add  
+      
+      
+      union all 
+      
+      select      fa_cate_name , fa_code ,fa_name , 
+             0 fa_value_begin , 
+             0 fa_value_begin_machine ,
+             0 fa_value_begin_building ,
+             0 fa_value_begin_vehicle ,
+             0 fa_value_begin_other , 
+             0 fa_accu_dep_begin , 
+             0 fa_accu_dep_begin_machine ,
+             0 fa_accu_dep_begin_building ,
+             0 fa_accu_dep_begin_vehicle ,
+             0 fa_accu_dep_begin_other , 
+             0 fa_value_add  ,
+             0 fa_accu_dep_add  , 
+             0 fa_value_add_purchase , 
+             0 fa_value_add_purchase_machine,
+             0 fa_value_add_purchase_building,
+             0 fa_value_add_purchase_vehicle,
+             0 fa_value_add_purchase_other, 
+             0 fa_accu_dep_add_purchase , 
+             0 fa_accu_dep_add_pur_machine , 
+             0 fa_accu_dep_add_pur_building , 
+             0 fa_accu_dep_add_pur_vehicle , 
+             0 fa_accu_dep_add_pur_other , 
+         
+             0 fa_value_add_constructure  , 
+             0 fa_value_add_cons_mechine  ,  
+             0 fa_value_add_cons_building  ,  
+             0 fa_value_add_cons_vehicle  , 
+             0 fa_value_add_cons_other  ,   
+                 
+             0 fa_accu_dep_add_constructure,
+             0 fa_accu_dep_add_cons_machine,
+             0 fa_accu_dep_add_cons_building,
+             0 fa_accu_dep_add_cons_vehicle,
+             0 fa_accu_dep_add_cons_other,
+             
+             
+             0 fa_value_add_other  ,  
+             0 fa_value_add_other_machine  ,
+             0 fa_value_add_other_building  ,
+             0 fa_value_add_other_vehicle  ,
+             0 fa_value_add_other_other  ,
+             
+             0 fa_accu_dep_add_other, 
+             0 fa_accu_dep_add_other_machine, 
+             0 fa_accu_dep_add_other_building, 
+             0 fa_accu_dep_add_other_vehicle, 
+             0 fa_accu_dep_add_other_other, 
+             
+             0 fa_value_reduce ,
+             0 fa_accu_dep_reduce ,
+             
+             fa_value_reduce_useless , 
+             decode(fa_cate_name ,V_FIX_ASSET_CATEGORY_MACHINE , fa_value_reduce_useless , 0 )  fa_value_red_useless_machine ,
+             decode(fa_cate_name ,V_FIX_ASSET_CATEGORY_BUILDING , fa_value_reduce_useless , 0 )  fa_value_red_useless_building , 
+             decode(fa_cate_name ,V_FIX_ASSET_CATEGORY_VEHICLE , fa_value_reduce_useless , 0 )  fa_value_red_useless_vehicle , 
+             decode(fa_cate_name ,V_FIX_ASSET_CATEGORY_OTHER , fa_value_reduce_useless , 0 )  fa_value_red_useless_other , 
+             
+             fa_accu_dep_reduce_useless , 
+             decode(fa_cate_name ,V_FIX_ASSET_CATEGORY_MACHINE , fa_accu_dep_reduce_useless , 0 ) fa_accu_dep_red_ul_machine , 
+             decode(fa_cate_name ,V_FIX_ASSET_CATEGORY_BUILDING , fa_accu_dep_reduce_useless , 0 ) fa_accu_dep_red_ul_building ,
+             decode(fa_cate_name ,V_FIX_ASSET_CATEGORY_VEHICLE , fa_accu_dep_reduce_useless , 0 ) fa_accu_dep_red_ul_vehicle ,
+             decode(fa_cate_name ,V_FIX_ASSET_CATEGORY_OTHER , fa_accu_dep_reduce_useless , 0 ) fa_accu_dep_red_ul_other ,
+             
+             
+             fa_value_reduce_other, 
+             decode(fa_cate_name ,V_FIX_ASSET_CATEGORY_MACHINE , fa_value_reduce_other , 0 ) fa_value_red_other_machine,
+             decode(fa_cate_name ,V_FIX_ASSET_CATEGORY_BUILDING , fa_value_reduce_other , 0 ) fa_value_red_other_building,
+             decode(fa_cate_name ,V_FIX_ASSET_CATEGORY_VEHICLE , fa_value_reduce_other , 0 ) fa_value_red_other_vehicle,
+             decode(fa_cate_name ,V_FIX_ASSET_CATEGORY_OTHER , fa_value_reduce_other , 0 ) fa_value_red_other_other, 
+             
+             fa_accu_dep_reduce_other, 
+             decode(fa_cate_name ,V_FIX_ASSET_CATEGORY_MACHINE , fa_accu_dep_reduce_other , 0 ) fa_accu_dep_red_other_machine, 
+             decode(fa_cate_name ,V_FIX_ASSET_CATEGORY_BUILDING , fa_accu_dep_reduce_other , 0 ) fa_accu_dep_red_other_building, 
+             decode(fa_cate_name ,V_FIX_ASSET_CATEGORY_VEHICLE , fa_accu_dep_reduce_other , 0 ) fa_accu_dep_red_other_vehicle, 
+             decode(fa_cate_name ,V_FIX_ASSET_CATEGORY_OTHER , fa_accu_dep_reduce_other , 0 ) fa_accu_dep_red_other_other, 
+             
+             0 fa_value_end  , 
+             0 fa_value_end_machine ,
+             0 fa_value_end_building ,
+             0 fa_value_end_vehicle ,
+             0 fa_value_end_other ,
+             0 fa_accu_dep_end  ,
+             0 fa_accu_dep_end_machine ,
+             0 fa_accu_dep_end_building ,
+             0 fa_accu_dep_end_vehicle ,
+             0 fa_accu_dep_end_other ,
+             
+             0 fa_curr_dep_end , 
+             0 fa_curr_dep_end_machine ,
+             0 fa_curr_dep_end_building ,
+             0 fa_curr_dep_end_vehicle ,
+             0 fa_curr_dep_end_other   
+      from  fa_reduce
+             
+   
+   )
+   
+
+   select 
+     fa_code ,fa_name , 
+     sum(fa_value_begin) fa_value_begin , 
+     sum(fa_value_begin_machine) fa_value_begin_machine ,
+     sum(fa_value_begin_building) fa_value_begin_building ,
+     sum(fa_value_begin_vehicle) fa_value_begin_vehicle ,
+     sum(fa_value_begin_other) fa_value_begin_other , 
+     sum(fa_accu_dep_begin) fa_accu_dep_begin , 
+     sum(fa_accu_dep_begin_machine) fa_accu_dep_begin_machine ,
+     sum(fa_accu_dep_begin_building) fa_accu_dep_begin_building ,
+     sum(fa_accu_dep_begin_vehicle) fa_accu_dep_begin_vehicle ,
+     sum(fa_accu_dep_begin_other) fa_accu_dep_begin_other , 
+     sum(fa_value_add) fa_value_add  ,
+     sum(fa_accu_dep_add) fa_accu_dep_add  , 
+     sum(fa_value_add_purchase) fa_value_add_purchase , 
+     sum(fa_value_add_purchase_machine) fa_value_add_purchase_machine,
+     sum(fa_value_add_purchase_building) fa_value_add_purchase_building,
+     sum(fa_value_add_purchase_vehicle) fa_value_add_purchase_vehicle,
+     sum(fa_value_add_purchase_other) fa_value_add_purchase_other, 
+     sum(fa_accu_dep_add_purchase) fa_accu_dep_add_purchase , 
+     sum(fa_accu_dep_add_pur_machine) fa_accu_dep_add_pur_machine , 
+     sum(fa_accu_dep_add_pur_building) fa_accu_dep_add_pur_building , 
+     sum(fa_accu_dep_add_pur_vehicle) fa_accu_dep_add_pur_vehicle , 
+     sum(fa_accu_dep_add_pur_other) fa_accu_dep_add_pur_other , 
+         
+     sum(fa_value_add_constructure) fa_value_add_constructure  , 
+     sum(fa_value_add_cons_mechine)  fa_value_add_cons_mechine  ,  
+     sum(fa_value_add_cons_building)  fa_value_add_cons_building  ,  
+     sum(fa_value_add_cons_vehicle)  fa_value_add_cons_vehicle  , 
+     sum(fa_value_add_cons_other)  fa_value_add_cons_other  ,   
+                 
+     sum(fa_accu_dep_add_constructure) fa_accu_dep_add_constructure,
+     sum(fa_accu_dep_add_cons_machine)  fa_accu_dep_add_cons_machine,
+     sum(fa_accu_dep_add_cons_building) fa_accu_dep_add_cons_building,
+     sum(fa_accu_dep_add_cons_vehicle) fa_accu_dep_add_cons_vehicle,
+     sum(fa_accu_dep_add_cons_other) fa_accu_dep_add_cons_other,
+             
+             
+     sum(fa_value_add_other) fa_value_add_other  ,  
+     sum(fa_value_add_other_machine) fa_value_add_other_machine  ,
+     sum(fa_value_add_other_building)  fa_value_add_other_building  ,
+     sum(fa_value_add_other_vehicle)  fa_value_add_other_vehicle  ,
+     sum(fa_value_add_other_other)  fa_value_add_other_other  ,
+             
+     sum(fa_accu_dep_add_other) fa_accu_dep_add_other, 
+     sum(fa_accu_dep_add_other_machine) fa_accu_dep_add_other_machine, 
+     sum(fa_accu_dep_add_other_building) fa_accu_dep_add_other_building, 
+     sum(fa_accu_dep_add_other_vehicle) fa_accu_dep_add_other_vehicle, 
+     sum(fa_accu_dep_add_other_other) fa_accu_dep_add_other_other, 
+             
+     sum(fa_value_reduce) fa_value_reduce ,
+     sum(fa_accu_dep_reduce)fa_accu_dep_reduce ,
+             
+     sum(fa_value_reduce_useless)  fa_value_reduce_useless , 
+     sum(fa_value_red_useless_machine)  fa_value_red_useless_machine ,
+     sum(fa_value_red_useless_building)  fa_value_red_useless_building , 
+     sum(fa_value_red_useless_vehicle)  fa_value_red_useless_vehicle , 
+     sum(fa_value_red_useless_other)  fa_value_red_useless_other , 
+             
+     sum(fa_accu_dep_reduce_useless) fa_accu_dep_reduce_useless , 
+     sum(fa_accu_dep_red_ul_machine) fa_accu_dep_red_ul_machine , 
+     sum(fa_accu_dep_red_ul_building) fa_accu_dep_red_ul_building ,
+     sum(fa_accu_dep_red_ul_vehicle) fa_accu_dep_red_ul_vehicle ,
+     sum(fa_accu_dep_red_ul_other) fa_accu_dep_red_ul_other ,
+             
+             
+     sum(fa_value_reduce_other) fa_value_reduce_other, 
+     sum(fa_value_red_other_machine) fa_value_red_other_machine,
+     sum(fa_value_red_other_building) fa_value_red_other_building,
+     sum(fa_value_red_other_vehicle) fa_value_red_other_vehicle,
+     sum(fa_value_red_other_other) fa_value_red_other_other, 
+             
+     sum(fa_accu_dep_reduce_other) fa_accu_dep_reduce_other, 
+     sum(fa_accu_dep_red_other_machine) fa_accu_dep_red_other_machine, 
+     sum(fa_accu_dep_red_other_building) fa_accu_dep_red_other_building, 
+     sum(fa_accu_dep_red_other_vehicle) fa_accu_dep_red_other_vehicle, 
+     sum(fa_accu_dep_red_other_other) fa_accu_dep_red_other_other, 
+             
+     sum(fa_value_end) fa_value_end  , 
+     sum(fa_value_end_machine) fa_value_end_machine ,
+     sum(fa_value_end_building) fa_value_end_building ,
+     sum(fa_value_end_vehicle) fa_value_end_vehicle ,
+     sum(fa_value_end_other) fa_value_end_other ,
+     sum(fa_accu_dep_end) fa_accu_dep_end  ,
+     sum(fa_accu_dep_end_machine) fa_accu_dep_end_machine ,
+     sum(fa_accu_dep_end_building) fa_accu_dep_end_building ,
+     sum(fa_accu_dep_end_vehicle) fa_accu_dep_end_vehicle ,
+     sum(fa_accu_dep_end_other) fa_accu_dep_end_other   , 
+     
+     sum(fa_curr_dep_end)  fa_curr_dep_end , 
+     sum(fa_curr_dep_end_machine) fa_curr_dep_end_machine ,
+     sum(fa_curr_dep_end_building) fa_curr_dep_end_building ,
+     sum(fa_curr_dep_end_vehicle) fa_curr_dep_end_vehicle ,
+     sum(fa_curr_dep_end_other) fa_curr_dep_end_other   
+   from fa_total 
+   group by  fa_code ,fa_name;
    
    type  nt_fa  is table of cur_fa%rowtype ;
    
