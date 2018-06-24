@@ -30,6 +30,53 @@ create or replace package zyhbfz is
    
    V_FIX_ASSET_REDUCE_USELESS  constant  pam_addreducestyle.style_name%type := '±¨·Ï' ;
    V_FIX_ASSET_REDUCE_OTHER  constant  pam_addreducestyle.style_name%type := 'ÆäËû' ;
+   
+   
+   
+   
+   
+   
+   --org  info  in  the cope of  consolidate system  
+   
+   cursor  cur_org_rpt_consolidate (
+                      rpt_code_param varchar2 default  V_ORG_CODE             
+   )
+   is
+   with a_all as (
+      select c.code children_org_code , c.name  children_org_name, c.pk_org  children_pk_org  ,
+      a.pk_fatherorg pk_father_report_org_join 
+      from   org_orgs c  , ORG_RCSMEMBER  a
+      where
+      11=11
+      and c.dr = 0 
+      and c.pk_org = a.pk_org
+      and a.dr = 0 
+    )  , 
+    father_org as 
+    (
+    
+      select  aa.code  father_org_code , aa.name  father_org_name ,  aa.pk_financeorg father_pk_org 
+      from org_financeorg  aa
+      where 
+      1=1
+      and aa.dr = 0 
+      and aa.code = rpt_code_param
+      
+    ) 
+    select  father_org_code , father_org_name , father_pk_org,  nvl(children_org_code , '~') children_org_code , 
+    nvl( children_org_name, '~') children_org_name,  nvl( children_pk_org  , '~') children_pk_org
+    from  a_all  bbb  , father_org aaa
+    where 
+    1=1
+    and aaa.father_pk_org  = bbb.pk_father_report_org_join (+) ; 
+    
+    
+   type nt_org_rpt_consolidate is table of cur_org_rpt_consolidate%rowtype ;
+   
+   function f_org_rpt_consolidate(rpt_code_param varchar2 default V_ORG_CODE)  
+   return nt_org_rpt_consolidate
+   pipelined;   
+   
 
    
    -- calculate the date for fixed asset  info 
@@ -600,8 +647,32 @@ create or replace package zyhbfz is
  
    
    
+  -- fixed asset  worksheet   index value  sum  
+   
+   cursor cur_fa_fz(org_code_param  varchar2 default '1000' ,
+                         year_month_param  varchar2 default '2018-01')
+   is
+   select sum(bb.m10088)  fa_beg_bal_building, 
+          sum(bb.m10075) fa_beg_bal_machine
+   from  iufo_measure_data_q79o1u4j  bb, IUFO_MEASPUB_0011  aa
+   where 
+   1=1
+   and bb.dr = 0 
+   and bb.alone_id = aa.alone_id
+   and aa.keyword1 in (select  yy.pk_org  from  ORG_RCSMEMBER yy   ,org_financeorg  xx  where  yy.dr =0  and yy.pk_fatherorg = xx.pk_financeorg
+       and xx.dr = 0 and xx.code = org_code_param 
+       union all select mm.pk_financeorg  pk_org   from org_financeorg mm  where mm.dr = 0 and mm.code = org_code_param )
+   and aa.dr  = 0  
+   and aa.keyword2 = year_month_param  ; 
+   
+   type nt_fa_fz is table of cur_fa_fz%rowtype ; 
    
    
+   function  f_fa_fz(org_code_param varchar2 default 1000 ,  
+                     year_month_param  varchar2 default '2018-01'                  
+   )
+   return nt_fa_fz 
+   pipelined; 
    
     
 
@@ -733,6 +804,77 @@ create or replace package body zyhbfz is
         
         end if; 
    end ; 
+   
+   
+    -- fixed asset  worksheet   index value  sum  
+   function  f_fa_fz(org_code_param varchar2 default 1000 ,  
+                     year_month_param  varchar2 default '2018-01'                  
+   )
+   return nt_fa_fz 
+   pipelined
+   is
+   l_nt_fa_fz    nt_fa_fz   := new  nt_fa_fz() ; 
+   begin 
+       open cur_fa_fz(org_code_param , year_month_param) ; 
+       fetch cur_fa_fz bulk collect into l_nt_fa_fz ; 
+       close cur_fa_fz ; 
+       
+       
+       
+       for x  in 1 ..  l_nt_fa_fz.count loop 
+         
+         pipe row ( l_nt_fa_fz(x)) ; 
+       
+       end loop; 
+   
+       return ; 
+        exception 
+     
+        when others   then 
+   
+        if( cur_fa_fz%isopen ) then 
+        
+           close cur_fa_fz ; 
+        
+        end if; 
+
+   end ; 
+   
+   ----org info  
+   
+   function f_org_rpt_consolidate(rpt_code_param varchar2 default V_ORG_CODE )  
+   return nt_org_rpt_consolidate 
+   pipelined
+   is
+   l_nt_org_rpt_consolidate  nt_org_rpt_consolidate  := new nt_org_rpt_consolidate() ;
+   begin    
+       open cur_org_rpt_consolidate(rpt_code_param ) ;
+         fetch cur_org_rpt_consolidate   bulk collect into l_nt_org_rpt_consolidate ;
+       close cur_org_rpt_consolidate ;
+       
+       
+       for x  in 1 .. l_nt_org_rpt_consolidate.count loop     
+          pipe row(l_nt_org_rpt_consolidate(x)) ; 
+       end loop ;
+       
+     
+           
+        return ;   
+       
+        exception 
+     
+        when others   then 
+   
+        if( cur_org_rpt_consolidate%isopen ) then 
+        
+           close cur_org_rpt_consolidate ; 
+        
+        end if; 
+    
+   end ; 
+   
+   
+
    
 
 begin
