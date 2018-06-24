@@ -78,10 +78,26 @@ create or replace package zyhbrpt is
    cc.asset_code  fa_code , 
    cc.asset_name  fa_name,  
    aa.localoriginvalue , aa.accudep , cc.pk_addreducestyle ,aa.newasset_flag ,aa.asset_state ,aa.pk_card ,
-   decode( aa.accyear||aa.period  ,begin_year_param||begin_month_param  , 
-           decode( aa.newasset_flag ,1, 0 , decode(  aa.asset_state ,'reduce' , 0  , aa.localoriginvalue)) , 0 ) fa_value_begin, 
-   decode( aa.accyear||aa.period  ,begin_year_param||begin_month_param ,  decode( aa.newasset_flag ,1,0 , 
-           decode( aa.asset_state ,'reduce' , 0 ,aa.accudep)) , 0 )  fa_accu_dep_begin ,
+   
+   
+  decode(  begin_year_param || begin_month_param  , '201801' ,        
+           decode( aa.accyear||aa.period , begin_year_param || begin_month_param , 
+                 decode( aa.newasset_flag, 1 , 0,
+                      decode( aa.asset_state ,'reduce' , 0, aa.localoriginvalue)) , 0 ),
+           decode( aa.accyear||aa.period  , begin_year_param || begin_month_param  , 
+                   decode(aa.newasset_flag ,0 , 0  , 1, 0 , 
+                        decode(aa.asset_state , 'reduce' , 0 , aa.localoriginvalue) )  , 0 )
+           ) fa_value_begin   ,    
+           
+   decode(   begin_year_param || begin_month_param  , '201801' ,        
+           decode( aa.accyear||aa.period , begin_year_param || begin_month_param , 
+                 decode( aa.newasset_flag, 1 , 0,
+                      decode( aa.asset_state ,'reduce' , 0, aa.accudep)) , 0 ),
+           decode( aa.accyear||aa.period  , begin_year_param || begin_month_param  , 
+                   decode(aa.newasset_flag ,0 , 0  , 1, 0 , 
+                        decode(aa.asset_state , 'reduce' , 0 , aa.accudep) )  , 0 )
+           ) fa_accu_dep_begin   ,     
+           
    0 fa_curr_dep_begin ,
    case  
       when   aa.accyear||aa.period <> end_year_dep_param||end_month_dep_param  
@@ -105,13 +121,32 @@ create or replace package zyhbrpt is
            decode(  aa.asset_state ,'reduce' ,  aa.localoriginvalue , 0 ) )     fa_value_reduce , 
    decode( aa.accyear||aa.period  ,begin_year_param||begin_month_param , 0 , 
            decode(  aa.asset_state ,'reduce' ,  aa.accudep , 0 ) )     fa_accu_dep_reduce ,   
-   decode( aa.accyear||aa.period  ,end_year_dep_param||end_month_dep_param  , 
-           decode( aa.newasset_flag ,1,0 ,  decode(  aa.asset_state ,'reduce' , 0  ,aa.localoriginvalue) ), 0 ) fa_value_end, 
-   decode( aa.accyear||aa.period  ,end_year_dep_param||end_month_dep_param  , decode( aa.newasset_flag ,1,0 ,   
-           decode(  aa.asset_state ,'reduce' , 0  ,aa.accudep)) , 0 )  fa_accu_dep_end ,
+           
+           
+  decode(  end_year_dep_param || end_month_dep_param, '201801' , 
+         
+           decode( aa.accyear||aa.period , end_year_dep_param || end_month_dep_param , decode( aa.newasset_flag, 1 , 0,
+                   decode( aa.asset_state ,'reduce' , 0, aa.localoriginvalue))  , 0 )  ,
+                   
+                   
+           decode( aa.accyear||aa.period  ,end_year_dep_param || end_month_dep_param , 
+                   decode(aa.newasset_flag ,0 , 0  , 1, 0 , 
+                        decode(aa.asset_state , 'reduce' , 0 , aa.localoriginvalue) )  , 0 )
+           ) fa_value_end  , 
+           
+           
+  decode(  end_year_dep_param || end_month_dep_param , '201801' ,        
+           decode( aa.accyear||aa.period , end_year_dep_param || end_month_dep_param , decode( aa.newasset_flag, 1 , 0,
+                   decode( aa.asset_state ,'reduce' , 0, aa.accudep))  , 0 )  ,
+           decode( aa.accyear||aa.period  , end_year_dep_param || end_month_dep_param , 
+                   decode(aa.newasset_flag ,0 , 0  , 1, 0 , 
+                        decode(aa.asset_state , 'reduce' , 0 , aa.accudep) )  , 0 )
+           ) fa_accu_dep_end  ,            
+                 
+
    case 
        when 
-            aa.accyear||aa.period >= begin_year_dep_param || begin_month_dep_param  then   aa.depamount 
+            aa.accyear||aa.period > begin_year_param||begin_month_param  then   aa.depamount 
        else  0 
    end   fa_curr_dep_end 
  
