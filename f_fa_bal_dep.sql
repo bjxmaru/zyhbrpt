@@ -227,17 +227,110 @@ select   cc.ASSET_CODE,cc.ASSET_NAME ,
   decode(aa.accyear || aa.period, parameter('begin_year') || parameter('begin_month') , 0  , 
               decode(   bb.CATE_NAME , '机器设备'   , aa.depamount , 0 ) ) fa_curr_dep_end_machine , 
   decode(aa.accyear || aa.period, parameter('begin_year') || parameter('begin_month') , 0  , 
-              decode(   bb.CATE_NAME , '运输工具'   , aa.depamount , 0 ) ) fa_curr_dep_end_vehicle  
+              decode(   bb.CATE_NAME , '运输工具'   , aa.depamount , 0 ) ) fa_curr_dep_end_vehicle    , 
               
               
               
+  decode( aa.accyear || aa.period  , '201801' ,  
+          decode( aa.newasset_flag , 1, aa.localoriginvalue , 0 ) , 
+          decode ( aa.accyear || aa.period  , macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep')  ,  0 , 
+                    decode ( aa.newasset_flag  , 1 ,  aa.localoriginvalue  , 0  ,  aa.localoriginvalue  ,0 )   ) )  fa_value_add  , 
+                    
+                    
+  decode( aa.accyear || aa.period  , '201801' ,  
+          decode( aa.newasset_flag , 1,  decode(   bb.CATE_NAME , '房屋及建筑物'   , aa.localoriginvalue , 0 ) , 0 ) , 
+          decode ( aa.accyear || aa.period  , macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep')  ,  0 , 
+                    decode ( aa.newasset_flag  , 1 ,  
+                       decode(   bb.CATE_NAME , '房屋及建筑物'   , aa.localoriginvalue , 0 )  , 0  ,   
+                              decode(   bb.CATE_NAME , '房屋及建筑物'   , aa.localoriginvalue , 0 )  ,0 )   ) )  fa_value_add_building  , 
+                              
+  decode(dd.style_name, '直接购入', decode( aa.accyear || aa.period  , '201801' ,  
+          decode( aa.newasset_flag , 1,  decode(   bb.CATE_NAME , '房屋及建筑物'   , aa.localoriginvalue , 0 ) , 0 ) , 
+          decode ( aa.accyear || aa.period  , macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep')  ,  0 , 
+                    decode ( aa.newasset_flag  , 1 ,  
+                       decode(   bb.CATE_NAME , '房屋及建筑物'   , aa.localoriginvalue , 0 )  , 0  ,   
+                              decode(   bb.CATE_NAME , '房屋及建筑物'   , aa.localoriginvalue , 0 )  ,0 )   ) ), 0) fa_value_add_purchase_building,                    
+  
+  decode(dd.style_name, '在建工程转入', decode( aa.accyear || aa.period  , '201801' ,  
+          decode( aa.newasset_flag , 1,  decode(   bb.CATE_NAME , '房屋及建筑物'   , aa.localoriginvalue , 0 ) , 0 ) , 
+          decode ( aa.accyear || aa.period  , macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep')  ,  0 , 
+                    decode ( aa.newasset_flag  , 1 ,  
+                       decode(   bb.CATE_NAME , '房屋及建筑物'   , aa.localoriginvalue , 0 )  , 0  ,   
+                              decode(   bb.CATE_NAME , '房屋及建筑物'   , aa.localoriginvalue , 0 )  ,0 )   ) ), 0) fa_value_add_cons_building ,                    
+                          
+  decode(dd.style_name, '在建工程转入', 0 , '直接购入' , 0 ,   decode( aa.accyear || aa.period  , '201801' ,  
+          decode( aa.newasset_flag , 1,  decode(   bb.CATE_NAME , '房屋及建筑物'   , aa.localoriginvalue , 0 ) , 0 ) , 
+          decode ( aa.accyear || aa.period  , macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep')  ,  0 , 
+                    decode ( aa.newasset_flag  , 1 ,  
+                       decode(   bb.CATE_NAME , '房屋及建筑物'   , aa.localoriginvalue , 0 )  , 0  ,   
+                              decode(   bb.CATE_NAME , '房屋及建筑物'   , aa.localoriginvalue , 0 )  ,0 )   ) ))   fa_value_add_other_building , 
+  
+                              
+                              
+  decode( aa.accyear || aa.period  , '201801' ,  
+          decode( aa.newasset_flag , 1,  decode(   bb.CATE_NAME , '机器设备'   , aa.localoriginvalue , 0 ) , 0 ) , 
+          decode ( aa.accyear || aa.period  , macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep')  ,  0 , 
+                    decode ( aa.newasset_flag  , 1 ,  
+                       decode(   bb.CATE_NAME , '机器设备'   , aa.localoriginvalue , 0 )  , 0  ,   
+                              decode(   bb.CATE_NAME , '机器设备'   , aa.localoriginvalue , 0 )  ,0 )   ) )  fa_value_add_machine  , 
+                                                          
+  decode( aa.accyear || aa.period  , '201801' ,  
+          decode( aa.newasset_flag , 1,  decode(   bb.CATE_NAME , '运输工具'   , aa.localoriginvalue , 0 ) , 0 ) , 
+          decode ( aa.accyear || aa.period  , macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep')  ,  0 , 
+                    decode ( aa.newasset_flag  , 1 ,  
+                       decode(   bb.CATE_NAME , '运输工具'   , aa.localoriginvalue , 0 )  , 0  ,   
+                              decode(   bb.CATE_NAME , '运输工具'   , aa.localoriginvalue , 0 )  ,0 )   ) )  fa_value_add_vehicle  ,                                               
+    
+  decode ( bb.CATE_NAME , '房屋及建筑物' ,  0 ,'机器设备'  ,  0 ,  '运输工具'  , 0 ,   
+        decode( aa.accyear || aa.period  , '201801' ,  
+          decode( aa.newasset_flag , 1,  aa.localoriginvalue , 0 ) , 
+          decode ( aa.accyear || aa.period  , macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep')  ,  0 , 
+                    decode ( aa.newasset_flag  , 1 ,  aa.localoriginvalue  , 0  ,   aa.localoriginvalue  ,0 )   ) )  
+   )  fa_value_add_other, 
+    
+           
+   decode( aa.accyear || aa.period  , '201801' ,  
+          decode( aa.newasset_flag , 1, aa.accudep , 0 ) , 
+          decode ( aa.accyear || aa.period  , macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep')  ,  0 , 
+                    decode ( aa.newasset_flag  , 1 ,  aa.accudep  , 0  ,  aa.accudep  ,0 )   ) )  fa_accu_dep_add    ,         
+                     
               
-   
-                                 
-                                 
-from fa_card cc , fa_category bb  , fa_cardhistory  aa  , ORG_FINANCEORG xx
+   decode( aa.accyear || aa.period  , '201801' ,  
+          decode( aa.newasset_flag , 1,  decode(   bb.CATE_NAME , '房屋及建筑物'   , aa.accudep , 0 ) , 0 ) , 
+          decode ( aa.accyear || aa.period  , macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep')  ,  0 , 
+                    decode ( aa.newasset_flag  , 1 ,  
+                       decode(   bb.CATE_NAME , '房屋及建筑物'   , aa.accudep , 0 )  , 0  ,   
+                              decode(   bb.CATE_NAME , '房屋及建筑物'   , aa.accudep , 0 )  ,0 )   ) )  fa_accu_dep_add_building  , 
+                              
+  decode( aa.accyear || aa.period  , '201801' ,  
+          decode( aa.newasset_flag , 1,  decode(   bb.CATE_NAME , '机器设备'   , aa.accudep , 0 ) , 0 ) , 
+          decode ( aa.accyear || aa.period  , macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep')  ,  0 , 
+                    decode ( aa.newasset_flag  , 1 ,  
+                       decode(   bb.CATE_NAME , '机器设备'   , aa.accudep , 0 )  , 0  ,   
+                              decode(   bb.CATE_NAME , '机器设备'   , aa.accudep , 0 )  ,0 )   ) )  fa_accu_dep_add_machine  , 
+                                                          
+  decode( aa.accyear || aa.period  , '201801' ,  
+          decode( aa.newasset_flag , 1,  decode(   bb.CATE_NAME , '运输工具'   , aa.accudep , 0 ) , 0 ) , 
+          decode ( aa.accyear || aa.period  , macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep')  ,  0 , 
+                    decode ( aa.newasset_flag  , 1 ,  
+                       decode(   bb.CATE_NAME , '运输工具'   , aa.accudep , 0 )  , 0  ,   
+                              decode(   bb.CATE_NAME , '运输工具'   , aa.accudep , 0 )  ,0 )   ) )  fa_accu_dep_add_vehicle    , 
+                           
+  decode ( bb.CATE_NAME , '房屋及建筑物' ,  0 ,'机器设备' , 0 ,  '运输工具', 0 , 
+       decode( aa.accyear || aa.period  , '201801' ,  
+          decode( aa.newasset_flag , 1,  aa.accudep , 0 ) , 
+          decode ( aa.accyear || aa.period  , macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep')  ,  0 , 
+                    decode ( aa.newasset_flag  , 1 ,  
+                      aa.accudep  , 0  ,  aa.accudep  ,0 )   ) )
+  
+   )   fa_accu_dep_add_other         
+              
+                              
+from  pam_addreducestyle dd ,  fa_card cc , fa_category bb  , fa_cardhistory  aa  , ORG_FINANCEORG xx
 where
   11=11
+  and dd.dr = 0 
+  and dd.pk_addreducestyle = cc.PK_ADDREDUCESTYLE
   and cc.dr = 0
   and cc.asset_code like  parameter('fa_code')
   and cc.pk_card =  aa.pk_card
