@@ -123,9 +123,12 @@ create or replace package zyhbrpt is
            decode(  aa.asset_state ,'reduce' ,  aa.accudep , 0 ) )     fa_accu_dep_reduce ,   
            
            
-  decode(  end_year_dep_param || end_month_dep_param, '201801' ,        
-           decode( aa.newasset_flag, 1 , 0,
-                   decode( aa.asset_state ,'reduce' , 0, aa.localoriginvalue)) ,
+  decode(  end_year_dep_param || end_month_dep_param, '201801' , 
+         
+           decode( aa.accyear||aa.period , end_year_dep_param || end_month_dep_param , decode( aa.newasset_flag, 1 , 0,
+                   decode( aa.asset_state ,'reduce' , 0, aa.localoriginvalue))  , 0 )  ,
+                   
+                   
            decode( aa.accyear||aa.period  ,end_year_dep_param || end_month_dep_param , 
                    decode(aa.newasset_flag ,0 , 0  , 1, 0 , 
                         decode(aa.asset_state , 'reduce' , 0 , aa.localoriginvalue) )  , 0 )
@@ -133,8 +136,8 @@ create or replace package zyhbrpt is
            
            
   decode(  end_year_dep_param || end_month_dep_param , '201801' ,        
-           decode( aa.newasset_flag, 1 , 0,
-                   decode( aa.asset_state ,'reduce' , 0, aa.accudep)) ,
+           decode( aa.accyear||aa.period , end_year_dep_param || end_month_dep_param , decode( aa.newasset_flag, 1 , 0,
+                   decode( aa.asset_state ,'reduce' , 0, aa.accudep))  , 0 )  ,
            decode( aa.accyear||aa.period  , end_year_dep_param || end_month_dep_param , 
                    decode(aa.newasset_flag ,0 , 0  , 1, 0 , 
                         decode(aa.asset_state , 'reduce' , 0 , aa.accudep) )  , 0 )
