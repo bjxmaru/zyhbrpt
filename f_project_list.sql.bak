@@ -1,0 +1,13 @@
+select   distinct cc.PROJECT_CODE , cc.PROJECT_NAME  , cc.pk_project   from GL_DETAIL  aa
+    inner join GL_DOCFREE1 bb  on (aa.ASSID = bb.ASSID
+                                   and aa.dr = 0 
+                                   and aa.assid is not null
+                                   and aa.discardflagv = 'N'
+                                   and aa.periodv between '00' and (substr(parameter('end_date_param'), 6, 2) || 'Z')
+                                   and aa.yearv = substr(parameter('end_date_param'), 1, 4)
+                                   and aa.PK_ACCOUNTINGBOOK = (select b.PK_ACCOUNTINGBOOK
+                                                               from ORG_FINANCEORG a
+                                                                 inner join ORG_ACCOUNTINGBOOK b on (a.PK_FINANCEORG = b.PK_RELORG and a.CODE = parameter('org_code_param')))
+    )
+    
+    inner join BD_PROJECT  cc  on (  cc.PK_PROJECT = bb.f10)

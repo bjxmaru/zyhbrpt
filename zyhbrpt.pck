@@ -216,7 +216,7 @@ create or replace package zyhbrpt is
             else  nnn.red_accudep  
      end fa_accu_dep_reduce_other
      from  pam_addreducestyle ooo ,  fa_reduce_b nnn  , bal_dep_before_sum  mmm
-     where 1=1
+     where 1=1 
      and ooo.pk_addreducestyle = nnn.pk_reducestyle
      and nnn.pk_card = nnn.pk_card 
      and mmm.fa_value_reduce > 0
