@@ -83,7 +83,31 @@ sum(fa_accu_dep_add_other_machine)  fa_accu_dep_add_other_machine,
      sum(fa_accu_dep_red_other_machine) fa_accu_dep_red_other_machine, 
      sum(fa_accu_dep_red_other_building) fa_accu_dep_red_other_building, 
      sum(fa_accu_dep_red_other_vehicle) fa_accu_dep_red_other_vehicle, 
-     sum(fa_accu_dep_red_other_other) fa_accu_dep_red_other_other
+     sum(fa_accu_dep_red_other_other) fa_accu_dep_red_other_other , 
+
+     sum(fa_accu_dep_add_dd_machine)  fa_accu_dep_add_dd_machine,
+     sum(fa_accu_dep_add_dd_building) fa_accu_dep_add_dd_building,
+     sum(fa_accu_dep_add_dd_vehicle) fa_accu_dep_add_dd_vehicle,
+     sum(fa_accu_dep_add_dd_other) fa_accu_dep_add_dd_other  , 
+
+     sum(fa_value_add_dd_machine)  fa_value_add_dd_machine  ,  
+     sum(fa_value_add_dd_building)  fa_value_add_dd_building  ,  
+     sum(fa_value_add_dd_vehicle)  fa_value_add_dd_vehicle  , 
+     sum(fa_value_add_dd_other)  fa_value_add_dd_other  , 
+
+    sum(fa_value_red_dd_machine) fa_value_red_dd_machine,
+     sum(fa_value_red_dd_building) fa_value_red_dd_building,
+     sum(fa_value_red_dd_vehicle) fa_value_red_dd_vehicle,
+     sum(fa_value_red_dd_other) fa_value_red_dd_other, 
+
+     sum(fa_accu_dep_red_other_machine) fa_accu_dep_red_dd_machine, 
+     sum(fa_accu_dep_red_other_building) fa_accu_dep_red_dd_building, 
+     sum(fa_accu_dep_red_other_vehicle) fa_accu_dep_red_dd_vehicle, 
+     sum(fa_accu_dep_red_other_other) fa_accu_dep_red_dd_other
+
+
+
+	 
      
      
      
@@ -595,8 +619,8 @@ select   cc.ASSET_CODE,cc.ASSET_NAME ,
 
 
 decode( aa.accyear||aa.period  , parameter('begin_year_param') || parameter('begin_month_param') , 0 , 
-           decode(  aa.asset_state ,'reduce' ,  aa.localoriginvalue , 0 ) )    + nvl(alter_detail.localoriginvalue_alter_reduce , 0) +
-           nvl(category_alter_reduce , 0)* aa.localoriginvalue  fa_value_reduce ,
+           decode(  aa.asset_state ,'reduce' ,  aa.localoriginvalue , 0 ) )   +  nvl(alter_detail.localoriginvalue_alter_reduce , 0) -
+           nvl(alter_detail.category_alter_red_building , 0)* aa.localoriginvalue  fa_value_reduce ,
 
 
   decode( nvl(ff.style_name,'~')  , '报废' ,decode( aa.accyear||aa.period  , parameter('begin_year_param') || parameter('begin_month_param') , 0 , 
@@ -637,64 +661,78 @@ decode( aa.accyear||aa.period  , parameter('begin_year_param') || parameter('beg
            decode(  aa.asset_state ,'reduce' , 
               decode(   bb.CATE_NAME , '房屋及建筑物' , 0 ,'运输工具', 0 , '机器设备' ,0,  aa.localoriginvalue  ) , 0 ) ) ) fa_value_red_other_other , 
               
-              
-  
-    decode( bb.CATE_NAME , '房屋及建筑物' , nvl(alter_detail.localoriginvalue_alter_reduce , 0)  , 0)  + nvl(alter_detail.category_alter_red_building,0) fa_value_red_dd_building , 
-              
-      decode( bb.CATE_NAME , '运输工具' , nvl(alter_detail.localoriginvalue_alter_reduce , 0)  , 0)  + nvl(alter_detail.category_alter_red_vehicle,0) fa_value_red_dd_vehicle ,
+    decode( bb.CATE_NAME , '房屋及建筑物' , nvl(alter_detail.localoriginvalue_alter_reduce , 0)  , 0)  - nvl(alter_detail.category_alter_red_building,0) *aa.localoriginvalue fa_value_red_dd_building , 
+
+
+    decode( bb.CATE_NAME , '运输工具' , nvl(alter_detail.localoriginvalue_alter_reduce , 0)  , 0)  -nvl(alter_detail.category_alter_red_vehicle,0) *aa.localoriginvalue fa_value_red_dd_vehicle ,
       
-       decode( bb.CATE_NAME , '机器设备' , nvl(alter_detail.localoriginvalue_alter_reduce , 0)  , 0)  + nvl(alter_detail.category_alter_red_machine,0) fa_value_red_dd_machine ,
+       decode( bb.CATE_NAME , '机器设备' , nvl(alter_detail.localoriginvalue_alter_reduce , 0)  , 0)  -nvl(alter_detail.category_alter_red_machine,0)*aa.localoriginvalue fa_value_red_dd_machine ,
        
-        decode( bb.CATE_NAME , '房屋及建筑物' , 0 , '运输工具',0 ,'机器设备',0 , nvl(alter_detail.localoriginvalue_alter_reduce , 0) )  + nvl(alter_detail.category_alter_red_other,0) fa_value_red_dd_other ,         
+        decode( bb.CATE_NAME , '房屋及建筑物' , 0 , '运输工具',0 ,'机器设备',0 , nvl(alter_detail.localoriginvalue_alter_reduce , 0) )  -nvl(alter_detail.category_alter_red_other,0)*aa.localoriginvalue fa_value_red_dd_other     ,   	
+        
               
-              
-              
-              
-              
+                         
 
  decode( aa.accyear||aa.period  ,parameter('begin_year_param') || parameter('begin_month_param'), 0 , 
-           decode(  aa.asset_state ,'reduce' ,  aa.accudep , 0 ) )  +     fa_accu_dep_reduce    , 
+           decode(  aa.asset_state ,'reduce' ,  aa.accudep , 0 ) )     fa_accu_dep_reduce    , 
            
            
     decode( nvl(ff.style_name,'~')  , '报废' ,decode( aa.accyear||aa.period  , parameter('begin_year_param') || parameter('begin_month_param') , 0 ,
-					decode(  aa.asset_state ,'reduce' ,
-					decode(   bb.CATE_NAME , '运输工具'   ,  aa.accudep , 0 ) , 0 ) )  , 0 ) fa_accu_dep_red_ul_vehicle  ,
-					
-					
-		 decode( nvl(ff.style_name,'~')  , '报废' ,decode( aa.accyear||aa.period  , parameter('begin_year_param') || parameter('begin_month_param') , 0 ,
-					decode(  aa.asset_state ,'reduce' ,
-					decode(   bb.CATE_NAME , '房屋及建筑物'   ,  aa.accudep , 0 ) , 0 ) )  , 0 ) fa_accu_dep_red_ul_building  ,		
-					
-					
-		 decode( nvl(ff.style_name,'~')  , '报废' ,decode( aa.accyear||aa.period  , parameter('begin_year_param') || parameter('begin_month_param') , 0 ,
-					decode(  aa.asset_state ,'reduce' ,
-					decode(   bb.CATE_NAME , '机器设备'   ,  aa.accudep , 0 ) , 0 ) )  , 0 ) fa_accu_dep_red_ul_machine  ,						       
+          decode(  aa.asset_state ,'reduce' ,
+          decode(   bb.CATE_NAME , '运输工具'   ,  aa.accudep , 0 ) , 0 ) )  , 0 ) fa_accu_dep_red_ul_vehicle  ,
+          
+          
+     decode( nvl(ff.style_name,'~')  , '报废' ,decode( aa.accyear||aa.period  , parameter('begin_year_param') || parameter('begin_month_param') , 0 ,
+          decode(  aa.asset_state ,'reduce' ,
+          decode(   bb.CATE_NAME , '房屋及建筑物'   ,  aa.accudep , 0 ) , 0 ) )  , 0 ) fa_accu_dep_red_ul_building  ,   
+          
+          
+     decode( nvl(ff.style_name,'~')  , '报废' ,decode( aa.accyear||aa.period  , parameter('begin_year_param') || parameter('begin_month_param') , 0 ,
+          decode(  aa.asset_state ,'reduce' ,
+          decode(   bb.CATE_NAME , '机器设备'   ,  aa.accudep , 0 ) , 0 ) )  , 0 ) fa_accu_dep_red_ul_machine  ,                   
            
        
        decode( nvl(ff.style_name,'~')  , '报废' ,decode( aa.accyear||aa.period  , parameter('begin_year_param') || parameter('begin_month_param') , 0 ,
-					decode(  aa.asset_state ,'reduce' ,
-					decode(   bb.CATE_NAME , '机器设备'   , 0 , '房屋及建筑物' ,0 , '运输工具', 0 ,    aa.accudep ) , 0 ) )  , 0 ) fa_accu_dep_red_ul_other , 	
-					
-							      
+          decode(  aa.asset_state ,'reduce' ,
+          decode(   bb.CATE_NAME , '机器设备'   , 0 , '房屋及建筑物' ,0 , '运输工具', 0 ,    aa.accudep ) , 0 ) )  , 0 ) fa_accu_dep_red_ul_other ,   
+          
+                    
            
    decode( nvl(ff.style_name,'~')  , '报废' , 0 , '~', 0 , decode( aa.accyear||aa.period  , parameter('begin_year_param') || parameter('begin_month_param') , 0 ,
-					decode(  aa.asset_state ,'reduce' ,
-					decode(   bb.CATE_NAME , '运输工具'   ,  aa.accudep , 0 ) , 0 ) )   ) fa_accu_dep_red_other_vehicle  ,
-					
-					
-		 decode( nvl(ff.style_name,'~')  , '报废' , 0 , '~', 0 , decode( aa.accyear||aa.period  , parameter('begin_year_param') || parameter('begin_month_param') , 0 ,
-					decode(  aa.asset_state ,'reduce' ,
-					decode(   bb.CATE_NAME , '房屋及建筑物'   ,  aa.accudep , 0 ) , 0 ) )   ) fa_accu_dep_red_other_building  ,		
-					
-					
-		 decode( nvl(ff.style_name,'~')  , '报废' , 0, '~' , 0 , decode( aa.accyear||aa.period  , parameter('begin_year_param') || parameter('begin_month_param') , 0 ,
-					decode(  aa.asset_state ,'reduce' ,
-					decode(   bb.CATE_NAME , '机器设备'   ,  aa.accudep , 0 ) , 0 ) )  ) fa_accu_dep_red_other_machine  ,						       
+          decode(  aa.asset_state ,'reduce' ,
+          decode(   bb.CATE_NAME , '运输工具'   ,  aa.accudep , 0 ) , 0 ) )   ) fa_accu_dep_red_other_vehicle  ,
+          
+          
+     decode( nvl(ff.style_name,'~')  , '报废' , 0 , '~', 0 , decode( aa.accyear||aa.period  , parameter('begin_year_param') || parameter('begin_month_param') , 0 ,
+          decode(  aa.asset_state ,'reduce' ,
+          decode(   bb.CATE_NAME , '房屋及建筑物'   ,  aa.accudep , 0 ) , 0 ) )   ) fa_accu_dep_red_other_building  ,   
+          
+          
+     decode( nvl(ff.style_name,'~')  , '报废' , 0, '~' , 0 , decode( aa.accyear||aa.period  , parameter('begin_year_param') || parameter('begin_month_param') , 0 ,
+          decode(  aa.asset_state ,'reduce' ,
+          decode(   bb.CATE_NAME , '机器设备'   ,  aa.accudep , 0 ) , 0 ) )  ) fa_accu_dep_red_other_machine  ,                  
            
        
        decode( nvl(ff.style_name,'~')  , '报废' ,  0 , '~' , 0  , decode( aa.accyear||aa.period  , parameter('begin_year_param') || parameter('begin_month_param') , 0 ,
-					decode(  aa.asset_state ,'reduce' ,
-					decode(   bb.CATE_NAME , '机器设备'   , 0 , '房屋及建筑物' ,0 , '运输工具', 0 ,    aa.accudep ) , 0 ) )  ) fa_accu_dep_red_other_other  
+          decode(  aa.asset_state ,'reduce' ,
+          decode(   bb.CATE_NAME , '机器设备'   , 0 , '房屋及建筑物' ,0 , '运输工具', 0 ,    aa.accudep ) , 0 ) )  ) fa_accu_dep_red_other_other   , 
+  decode( nvl(ff.style_name,'~')  , '报废' , 0 , '~', 0  , 	
+		       decode(   bb.CATE_NAME , '房屋及建筑物' ,    
+		                              nvl(alter_detail.accudep_alter_reduce , 0)  -       nvl(alter_detail.category_alter_red_machine,0)*aa.accudep , 0 ) , 0)  fa_accu_dep_red_dd_building  , 
+
+ decode( nvl(ff.style_name,'~')  , '报废' , 0 , '~', 0  , 	
+		       decode(   bb.CATE_NAME , '机器设备' ,    
+		                              nvl(alter_detail.accudep_alter_reduce , 0)  -             nvl(alter_detail.category_alter_red_machine,0)*aa.accudep , 0 ) , 0)  fa_accu_dep_red_dd_machine  ,                              
+		 
+       decode( nvl(ff.style_name,'~')  , '报废' , 0 , '~', 0  , 	
+		       decode(   bb.CATE_NAME , '运输工具' ,    
+		                              nvl(alter_detail.accudep_alter_reduce , 0)  -             nvl(alter_detail.category_alter_red_vehicle,0) *aa.accudep , 0 ) , 0) fa_accu_dep_red_dd_vehicle  ,
+		                              
+		   decode( nvl(ff.style_name,'~')  , '报废' , 0 , '~', 0  , 	
+		       decode(   bb.CATE_NAME , '运输工具' , 0 , '房屋及建筑物', 0 , '机器设备'  , 0 ,    
+		                              nvl(alter_detail.accudep_alter_reduce , 0)  -             nvl(alter_detail.category_alter_red_other,0)*aa.accudep , 0 ) , 0 )  fa_accu_dep_red_dd_other		
+
+
 
 
    
@@ -702,15 +740,15 @@ decode( aa.accyear||aa.period  , parameter('begin_year_param') || parameter('beg
                               
   from 
 fa_cardhistory aa   inner join  fa_category  bb 
-				    on ( bb.pk_category = aa.pk_category_old 
-				         and bb.dr = 0 
-				         and aa.laststate_flag = 'N'
-				         and aa.dr = 0 
-				         and aa.accyear||aa.period  <=  macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep')
-				         and aa.accyear||aa.period  >=  parameter('begin_year_param') || parameter('begin_month_param')
-				         and aa.pk_org = 
-				             (select xx.PK_FINANCEORG  from ORG_FINANCEORG  xx where xx.dr = 0  and  xx.code = parameter('org_code') ) 
-				        
+            on ( bb.pk_category = aa.pk_category_old 
+                 and bb.dr = 0 
+                 and aa.laststate_flag = 'N'
+                 and aa.dr = 0 
+                 and aa.accyear||aa.period  <=  macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep')
+                 and aa.accyear||aa.period  >=  parameter('begin_year_param') || parameter('begin_month_param')
+                 and aa.pk_org = 
+                     (select xx.PK_FINANCEORG  from ORG_FINANCEORG  xx where xx.dr = 0  and  xx.code = parameter('org_code') ) 
+                
                 )  inner join fa_card cc   
             on  (  cc.pk_card =  aa.pk_card   and cc.dr = 0   and cc.asset_code like  parameter('fa_code') ) 
 
@@ -755,10 +793,10 @@ decode(to_number(substr(gg.audittime,6,2))+1 , 13, to_char(to_number(substr(gg.a
           
           decode(gg.transi_type , 'HG-17', 0 ,  'HG-06',0 ,
                  decode(ii.item_code , 'localoriginvalue' , 
-			                 decode(abs(to_number(ii.new_content)-to_number(ii.old_content) ) , 
-			                           to_number(ii.new_content)-to_number(ii.old_content) ,
-			                            0 , to_number(ii.old_content)-to_number(ii.new_content)  ) , 
-			                 0  )        
+                       decode(abs(to_number(ii.new_content)-to_number(ii.old_content) ) , 
+                                 to_number(ii.new_content)-to_number(ii.old_content) ,
+                                  0 , to_number(ii.old_content)-to_number(ii.new_content)  ) , 
+                       0  )        
           )  localoriginvalue_alter_reduce , 
            
           decode(gg.transi_type , 'HG-17', 0 ,  'HG-02',0 ,
@@ -841,7 +879,7 @@ decode(to_number(substr(gg.audittime,6,2))+1 , 13, to_char(to_number(substr(gg.a
                                                  '1001A11000000008I9PS', 0 , 
                                                  '1001A11000000008I9PR' , 0,-1 )  , 0) 
                     
-          )  category_alter_red_other 
+          )  category_alter_red_other  
 
          
 from  fa_alter gg 
@@ -860,7 +898,8 @@ from  fa_alter gg
      )     alter_detail    
            on  (  alter_detail.pk_card = aa.pk_card 
                   and alter_detail.accyear_alter = aa.accyear 
-                  and alter_detail.period_alter = aa.period   )   
+                  and alter_detail.period_alter = aa.period   )    
+
 
 )
 
