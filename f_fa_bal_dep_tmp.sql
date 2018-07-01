@@ -106,11 +106,11 @@ select   cc.ASSET_CODE,cc.ASSET_NAME ,
             decode( aa.accyear||aa.period , parameter('begin_year_param') || parameter('begin_month_param') , 
                  decode( aa.newasset_flag, 1 , 0,
                       decode( aa.asset_state ,'reduce' , 0, 
-                         decode(   bb.CATE_NAME , '房屋及建筑物' , aa.localoriginvalue , 0 ) )) , 0 ),
+                         decode(   bb.CATE_NAME , '鎴垮眿鍙婂缓绛戠墿' , aa.localoriginvalue , 0 ) )) , 0 ),
            decode( aa.accyear||aa.period  , parameter('begin_year_param') || parameter('begin_month_param')  , 
                    decode(aa.newasset_flag ,0 , 0  , 1, 0 , 
                         decode(aa.asset_state , 'reduce' , 0 , 
-                                 decode(   bb.CATE_NAME , '房屋及建筑物' , aa.localoriginvalue , 0 )    ) )  , 0 )
+                                 decode(   bb.CATE_NAME , '鎴垮眿鍙婂缓绛戠墿' , aa.localoriginvalue , 0 )    ) )  , 0 )
            ) fa_value_begin_building   ,                    
                                  
                   
@@ -118,11 +118,11 @@ select   cc.ASSET_CODE,cc.ASSET_NAME ,
            decode( aa.accyear||aa.period , parameter('begin_year_param') || parameter('begin_month_param') , 
                  decode( aa.newasset_flag, 1 , 0,
                       decode( aa.asset_state ,'reduce' , 0, 
-                         decode(   bb.CATE_NAME , '机器设备' , aa.localoriginvalue , 0 ) )) , 0 ),
+                         decode(   bb.CATE_NAME , '鏈哄櫒璁惧' , aa.localoriginvalue , 0 ) )) , 0 ),
            decode( aa.accyear||aa.period  , parameter('begin_year_param') || parameter('begin_month_param')  , 
                    decode(aa.newasset_flag ,0 , 0  , 1, 0 , 
                         decode(aa.asset_state , 'reduce' , 0 , 
-                                 decode(   bb.CATE_NAME , '机器设备' , aa.localoriginvalue , 0 )    ) )  , 0 )
+                                 decode(   bb.CATE_NAME , '鏈哄櫒璁惧' , aa.localoriginvalue , 0 )    ) )  , 0 )
            ) fa_value_begin_machine   ,                 
                   
                                  
@@ -130,11 +130,11 @@ select   cc.ASSET_CODE,cc.ASSET_NAME ,
            decode( aa.accyear||aa.period , parameter('begin_year_param') || parameter('begin_month_param') , 
                  decode( aa.newasset_flag, 1 , 0,
                       decode( aa.asset_state ,'reduce' , 0, 
-                         decode(   bb.CATE_NAME , '运输工具' , aa.localoriginvalue , 0 ) )) , 0 ),
+                         decode(   bb.CATE_NAME , '杩愯緭宸ュ叿' , aa.localoriginvalue , 0 ) )) , 0 ),
            decode( aa.accyear||aa.period  , parameter('begin_year_param') || parameter('begin_month_param')  , 
                    decode(aa.newasset_flag ,0 , 0  , 1, 0 , 
                         decode(aa.asset_state , 'reduce' , 0 , 
-                                 decode(   bb.CATE_NAME , '运输工具' , aa.localoriginvalue , 0 )    ) )  , 0 )
+                                 decode(   bb.CATE_NAME , '杩愯緭宸ュ叿' , aa.localoriginvalue , 0 )    ) )  , 0 )
            ) fa_value_begin_vehicle   ,                 
                   
                   
@@ -155,11 +155,11 @@ select   cc.ASSET_CODE,cc.ASSET_NAME ,
           decode( aa.accyear||aa.period , parameter('begin_year_param') || parameter('begin_month_param') , 
                  decode( aa.newasset_flag, 1 , 0,
                       decode( aa.asset_state ,'reduce' , 0, 
-                         decode(   bb.CATE_NAME , '房屋及建筑物' , aa.accudep , 0 ) )) , 0 ),
+                         decode(   bb.CATE_NAME , '鎴垮眿鍙婂缓绛戠墿' , aa.accudep , 0 ) )) , 0 ),
            decode( aa.accyear||aa.period  , parameter('begin_year_param') || parameter('begin_month_param')  , 
                    decode(aa.newasset_flag ,0 , 0  , 1, 0 , 
                         decode(aa.asset_state , 'reduce' , 0 , 
-                                 decode(   bb.CATE_NAME , '房屋及建筑物' , aa.accudep , 0 )    ) )  , 0 )
+                                 decode(   bb.CATE_NAME , '鎴垮眿鍙婂缓绛戠墿' , aa.accudep , 0 )    ) )  , 0 )
            ) fa_accu_dep_begin_building   ,                    
                                  
                   
@@ -167,11 +167,11 @@ select   cc.ASSET_CODE,cc.ASSET_NAME ,
           decode( aa.accyear||aa.period , parameter('begin_year_param') || parameter('begin_month_param') , 
                  decode( aa.newasset_flag, 1 , 0,
                       decode( aa.asset_state ,'reduce' , 0, 
-                         decode(   bb.CATE_NAME , '机器设备' , aa.accudep , 0 ) )) , 0 ),
+                         decode(   bb.CATE_NAME , '鏈哄櫒璁惧' , aa.accudep , 0 ) )) , 0 ),
            decode( aa.accyear||aa.period  , parameter('begin_year_param') || parameter('begin_month_param')  , 
                    decode(aa.newasset_flag ,0 , 0  , 1, 0 , 
                         decode(aa.asset_state , 'reduce' , 0 , 
-                                 decode(   bb.CATE_NAME , '机器设备' , aa.accudep , 0 )    ) )  , 0 )
+                                 decode(   bb.CATE_NAME , '鏈哄櫒璁惧' , aa.accudep , 0 )    ) )  , 0 )
            ) fa_accu_dep_begin_machine   ,                 
                   
                                  
@@ -179,11 +179,11 @@ select   cc.ASSET_CODE,cc.ASSET_NAME ,
           decode( aa.accyear||aa.period , parameter('begin_year_param') || parameter('begin_month_param') , 
                  decode( aa.newasset_flag, 1 , 0,
                       decode( aa.asset_state ,'reduce' , 0, 
-                         decode(   bb.CATE_NAME , '运输工具' , aa.accudep , 0 ) )) , 0 ),
+                         decode(   bb.CATE_NAME , '杩愯緭宸ュ叿' , aa.accudep , 0 ) )) , 0 ),
            decode( aa.accyear||aa.period  , parameter('begin_year_param') || parameter('begin_month_param')  , 
                    decode(aa.newasset_flag ,0 , 0  , 1, 0 , 
                         decode(aa.asset_state , 'reduce' , 0 , 
-                                 decode(   bb.CATE_NAME , '运输工具' , aa.accudep , 0 )    ) )  , 0 )
+                                 decode(   bb.CATE_NAME , '杩愯緭宸ュ叿' , aa.accudep , 0 )    ) )  , 0 )
            ) fa_accu_dep_begin_vehicle   ,                    
                   
 
@@ -202,22 +202,22 @@ select   cc.ASSET_CODE,cc.ASSET_NAME ,
     decode(  macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep') , '201801' ,        
           decode(  aa.accyear||aa.period  , macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep') ,  decode( aa.newasset_flag, 1 , 0,
                    decode( aa.asset_state ,'reduce' , 0, 
-                          decode(   bb.CATE_NAME , '房屋及建筑物' , aa.localoriginvalue , 0 )  )) ,0) ,
+                          decode(   bb.CATE_NAME , '鎴垮眿鍙婂缓绛戠墿' , aa.localoriginvalue , 0 )  )) ,0) ,
            decode( aa.accyear||aa.period  ,macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep') , 
                    decode(aa.newasset_flag ,0 , 0  , 1, 0 , 
                         decode(aa.asset_state , 'reduce' , 0 , 
-                               decode(   bb.CATE_NAME , '房屋及建筑物' , aa.localoriginvalue , 0 )) )  , 0 )
+                               decode(   bb.CATE_NAME , '鎴垮眿鍙婂缓绛戠墿' , aa.localoriginvalue , 0 )) )  , 0 )
            ) fa_value_end_building  , 
  
                   
     decode(  macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep') , '201801' ,        
            decode(  aa.accyear||aa.period  , macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep') , decode( aa.newasset_flag, 1 , 0,
                    decode( aa.asset_state ,'reduce' , 0, 
-                          decode(   bb.CATE_NAME , '机器设备' , aa.localoriginvalue , 0 )  )) ,0) ,
+                          decode(   bb.CATE_NAME , '鏈哄櫒璁惧' , aa.localoriginvalue , 0 )  )) ,0) ,
            decode( aa.accyear||aa.period  ,macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep') , 
                    decode(aa.newasset_flag ,0 , 0  , 1, 0 , 
                         decode(aa.asset_state , 'reduce' , 0 , 
-                               decode(   bb.CATE_NAME , '机器设备' , aa.localoriginvalue , 0 )) )  , 0 )
+                               decode(   bb.CATE_NAME , '鏈哄櫒璁惧' , aa.localoriginvalue , 0 )) )  , 0 )
            ) fa_value_end_machine  , 
                
         
@@ -226,11 +226,11 @@ select   cc.ASSET_CODE,cc.ASSET_NAME ,
    decode(  macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep') , '201801' ,        
           decode(  aa.accyear||aa.period  , macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep') ,  decode( aa.newasset_flag, 1 , 0,
                    decode( aa.asset_state ,'reduce' , 0, 
-                          decode(   bb.CATE_NAME , '运输工具' , aa.localoriginvalue , 0 )  )) ,0) ,
+                          decode(   bb.CATE_NAME , '杩愯緭宸ュ叿' , aa.localoriginvalue , 0 )  )) ,0) ,
            decode( aa.accyear||aa.period  ,macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep') , 
                    decode(aa.newasset_flag ,0 , 0  , 1, 0 , 
                         decode(aa.asset_state , 'reduce' , 0 , 
-                               decode(   bb.CATE_NAME , '运输工具' , aa.localoriginvalue , 0 )) )  , 0 )
+                               decode(   bb.CATE_NAME , '杩愯緭宸ュ叿' , aa.localoriginvalue , 0 )) )  , 0 )
            ) fa_value_end_vehicle  ,            
                   
                   
@@ -250,22 +250,22 @@ select   cc.ASSET_CODE,cc.ASSET_NAME ,
    decode(  macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep') , '201801' ,        
           decode(  aa.accyear||aa.period  , macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep') ,  decode( aa.newasset_flag, 1 , 0,
                    decode( aa.asset_state ,'reduce' , 0, 
-                          decode(   bb.CATE_NAME , '房屋及建筑物' , aa.accudep , 0 )  )) ,0),
+                          decode(   bb.CATE_NAME , '鎴垮眿鍙婂缓绛戠墿' , aa.accudep , 0 )  )) ,0),
            decode( aa.accyear||aa.period  ,macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep') , 
                    decode(aa.newasset_flag ,0 , 0  , 1, 0 , 
                         decode(aa.asset_state , 'reduce' , 0 , 
-                               decode(   bb.CATE_NAME , '房屋及建筑物' , aa.accudep , 0 )) )  , 0 )
+                               decode(   bb.CATE_NAME , '鎴垮眿鍙婂缓绛戠墿' , aa.accudep , 0 )) )  , 0 )
            ) fa_accu_dep_end_building  , 
  
                   
     decode(  macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep') , '201801' ,        
          decode(  aa.accyear||aa.period  , macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep') ,   decode( aa.newasset_flag, 1 , 0,
                    decode( aa.asset_state ,'reduce' , 0, 
-                          decode(   bb.CATE_NAME , '机器设备' , aa.accudep , 0 )  )) , 0),
+                          decode(   bb.CATE_NAME , '鏈哄櫒璁惧' , aa.accudep , 0 )  )) , 0),
            decode( aa.accyear||aa.period  ,macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep') , 
                    decode(aa.newasset_flag ,0 , 0  , 1, 0 , 
                         decode(aa.asset_state , 'reduce' , 0 , 
-                               decode(   bb.CATE_NAME , '机器设备' , aa.accudep , 0 )) )  , 0 )
+                               decode(   bb.CATE_NAME , '鏈哄櫒璁惧' , aa.accudep , 0 )) )  , 0 )
            ) fa_accu_dep_end_machine  , 
                
        
@@ -273,11 +273,11 @@ select   cc.ASSET_CODE,cc.ASSET_NAME ,
    decode(  macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep') , '201801' ,        
           decode(  aa.accyear||aa.period  , macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep') ,  decode( aa.newasset_flag, 1 , 0,
                    decode( aa.asset_state ,'reduce' , 0, 
-                          decode(   bb.CATE_NAME , '运输工具' , aa.accudep , 0 )  )) , 0) ,
+                          decode(   bb.CATE_NAME , '杩愯緭宸ュ叿' , aa.accudep , 0 )  )) , 0) ,
            decode( aa.accyear||aa.period  ,macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep') , 
                    decode(aa.newasset_flag ,0 , 0  , 1, 0 , 
                         decode(aa.asset_state , 'reduce' , 0 , 
-                               decode(   bb.CATE_NAME , '运输工具' , aa.accudep , 0 )) )  , 0 )
+                               decode(   bb.CATE_NAME , '杩愯緭宸ュ叿' , aa.accudep , 0 )) )  , 0 )
            ) fa_accu_dep_end_vehicle  ,            
                   
                 
@@ -286,11 +286,11 @@ select   cc.ASSET_CODE,cc.ASSET_NAME ,
   
   
   decode(aa.accyear || aa.period, parameter('begin_year_param') || parameter('begin_month_param') , 0  , 
-              decode(   bb.CATE_NAME , '房屋及建筑物'   , aa.depamount , 0 ) ) fa_curr_dep_end_building , 
+              decode(   bb.CATE_NAME , '鎴垮眿鍙婂缓绛戠墿'   , aa.depamount , 0 ) ) fa_curr_dep_end_building , 
   decode(aa.accyear || aa.period, parameter('begin_year_param') || parameter('begin_month_param') , 0  , 
-              decode(   bb.CATE_NAME , '机器设备'   , aa.depamount , 0 ) ) fa_curr_dep_end_machine , 
+              decode(   bb.CATE_NAME , '鏈哄櫒璁惧'   , aa.depamount , 0 ) ) fa_curr_dep_end_machine , 
   decode(aa.accyear || aa.period, parameter('begin_year_param') || parameter('begin_month_param') , 0  , 
-              decode(   bb.CATE_NAME , '运输工具'   , aa.depamount , 0 ) ) fa_curr_dep_end_vehicle    , 
+              decode(   bb.CATE_NAME , '杩愯緭宸ュ叿'   , aa.depamount , 0 ) ) fa_curr_dep_end_vehicle    , 
               
               
               
@@ -302,106 +302,106 @@ select   cc.ASSET_CODE,cc.ASSET_NAME ,
                     
                     
   decode( aa.accyear || aa.period  , '201801' ,  
-          decode( aa.newasset_flag , 1,  decode(   bb.CATE_NAME , '房屋及建筑物'   , aa.localoriginvalue , 0 ) , 0 ) , 
+          decode( aa.newasset_flag , 1,  decode(   bb.CATE_NAME , '鎴垮眿鍙婂缓绛戠墿'   , aa.localoriginvalue , 0 ) , 0 ) , 
           decode ( aa.accyear || aa.period  , macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep')  ,  0 , 
                     decode ( aa.newasset_flag  , 1 ,  
-                       decode(   bb.CATE_NAME , '房屋及建筑物'   , aa.localoriginvalue , 0 )  , 0  ,   
-                              decode(   bb.CATE_NAME , '房屋及建筑物'   , aa.localoriginvalue   , 0 )  ,0 )   ) )  
+                       decode(   bb.CATE_NAME , '鎴垮眿鍙婂缓绛戠墿'   , aa.localoriginvalue , 0 )  , 0  ,   
+                              decode(   bb.CATE_NAME , '鎴垮眿鍙婂缓绛戠墿'   , aa.localoriginvalue   , 0 )  ,0 )   ) )  
                                 fa_value_add_building  , 
                               
-  decode(dd.style_name, '直接购入', decode( aa.accyear || aa.period  , '201801' ,  
-          decode( aa.newasset_flag , 1,  decode(   bb.CATE_NAME , '房屋及建筑物'   , aa.localoriginvalue , 0 ) , 0 ) , 
+  decode(dd.style_name, '鐩存帴璐叆', decode( aa.accyear || aa.period  , '201801' ,  
+          decode( aa.newasset_flag , 1,  decode(   bb.CATE_NAME , '鎴垮眿鍙婂缓绛戠墿'   , aa.localoriginvalue , 0 ) , 0 ) , 
           decode ( aa.accyear || aa.period  , macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep')  ,  0 , 
                     decode ( aa.newasset_flag  , 1 ,  
-                       decode(   bb.CATE_NAME , '房屋及建筑物'   , aa.localoriginvalue , 0 )  , 0  ,   
-                              decode(   bb.CATE_NAME , '房屋及建筑物'   , aa.localoriginvalue  , 0 )  ,0 )   ) ), 0)    fa_value_add_purchase_building,                    
+                       decode(   bb.CATE_NAME , '鎴垮眿鍙婂缓绛戠墿'   , aa.localoriginvalue , 0 )  , 0  ,   
+                              decode(   bb.CATE_NAME , '鎴垮眿鍙婂缓绛戠墿'   , aa.localoriginvalue  , 0 )  ,0 )   ) ), 0)    fa_value_add_purchase_building,                    
   
-  decode(dd.style_name, '在建工程转入', 
+  decode(dd.style_name, '鍦ㄥ缓宸ョ▼杞叆', 
       decode( aa.accyear || aa.period  , '201801' ,  
-              decode( aa.newasset_flag , 1,  decode(   bb.CATE_NAME , '房屋及建筑物'   , aa.localoriginvalue , 0 ) , 0 ) , 
+              decode( aa.newasset_flag , 1,  decode(   bb.CATE_NAME , '鎴垮眿鍙婂缓绛戠墿'   , aa.localoriginvalue , 0 ) , 0 ) , 
               decode ( aa.accyear || aa.period  , macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep')  ,  0 , 
                          decode ( aa.newasset_flag  , 1 ,  
-                               decode(   bb.CATE_NAME , '房屋及建筑物'   , aa.localoriginvalue , 0 )  , 0  ,   
-                               decode(   bb.CATE_NAME , '房屋及建筑物'   , aa.localoriginvalue , 0 )  , 0 )   ) ), 
+                               decode(   bb.CATE_NAME , '鎴垮眿鍙婂缓绛戠墿'   , aa.localoriginvalue , 0 )  , 0  ,   
+                               decode(   bb.CATE_NAME , '鎴垮眿鍙婂缓绛戠墿'   , aa.localoriginvalue , 0 )  , 0 )   ) ), 
    0) fa_value_add_cons_building ,                    
                           
-  decode(dd.style_name, '在建工程转入', 0 , '直接购入' , 0 ,   decode( aa.accyear || aa.period  , '201801' ,  
-          decode( aa.newasset_flag , 1,  decode(   bb.CATE_NAME , '房屋及建筑物'   , aa.localoriginvalue , 0 ) , 0 ) , 
+  decode(dd.style_name, '鍦ㄥ缓宸ョ▼杞叆', 0 , '鐩存帴璐叆' , 0 ,   decode( aa.accyear || aa.period  , '201801' ,  
+          decode( aa.newasset_flag , 1,  decode(   bb.CATE_NAME , '鎴垮眿鍙婂缓绛戠墿'   , aa.localoriginvalue , 0 ) , 0 ) , 
           decode ( aa.accyear || aa.period  , macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep')  ,  0 , 
                     decode ( aa.newasset_flag  , 1 ,  
-                       decode(   bb.CATE_NAME , '房屋及建筑物'   , aa.localoriginvalue , 0 )  , 0  ,   
-                              decode(   bb.CATE_NAME , '房屋及建筑物'   , aa.localoriginvalue   , 0 )  ,0 )   ) ))   fa_value_add_other_building ,                      
+                       decode(   bb.CATE_NAME , '鎴垮眿鍙婂缓绛戠墿'   , aa.localoriginvalue , 0 )  , 0  ,   
+                              decode(   bb.CATE_NAME , '鎴垮眿鍙婂缓绛戠墿'   , aa.localoriginvalue   , 0 )  ,0 )   ) ))   fa_value_add_other_building ,                      
                               
   decode( aa.accyear || aa.period  ,  '201801' ,  
           decode( aa.newasset_flag , 1,  
-		       decode(   bb.CATE_NAME , '机器设备'   , aa.localoriginvalue , 0 ) , 0 ) , 
+		       decode(   bb.CATE_NAME , '鏈哄櫒璁惧'   , aa.localoriginvalue , 0 ) , 0 ) , 
           decode ( aa.accyear || aa.period  , macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep')  ,  0 , 
                     decode ( aa.newasset_flag  , 1 ,  
-                       decode(   bb.CATE_NAME , '机器设备'   , aa.localoriginvalue , 0 )  , 0  ,   
-                              decode(   bb.CATE_NAME , '机器设备'   , aa.localoriginvalue , 0 )  ,0 )   ) ) 
+                       decode(   bb.CATE_NAME , '鏈哄櫒璁惧'   , aa.localoriginvalue , 0 )  , 0  ,   
+                              decode(   bb.CATE_NAME , '鏈哄櫒璁惧'   , aa.localoriginvalue , 0 )  ,0 )   ) ) 
                   fa_value_add_machine  , 
                               
                               
                               
-  decode(dd.style_name, '直接购入'  ,decode( aa.accyear || aa.period  , '201801' ,  
-          decode( aa.newasset_flag , 1,  decode(   bb.CATE_NAME , '机器设备'   , aa.localoriginvalue , 0 ) , 0 ) , 
+  decode(dd.style_name, '鐩存帴璐叆'  ,decode( aa.accyear || aa.period  , '201801' ,  
+          decode( aa.newasset_flag , 1,  decode(   bb.CATE_NAME , '鏈哄櫒璁惧'   , aa.localoriginvalue , 0 ) , 0 ) , 
           decode ( aa.accyear || aa.period  , macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep')  ,  0 , 
                     decode ( aa.newasset_flag  , 1 ,  
-                       decode(   bb.CATE_NAME , '机器设备'   , aa.localoriginvalue , 0 )  , 0  ,   
-                              decode(   bb.CATE_NAME , '机器设备'   , aa.localoriginvalue , 0 )  ,0 )   ) )  ,  0  )  fa_value_add_purchase_machine ,
+                       decode(   bb.CATE_NAME , '鏈哄櫒璁惧'   , aa.localoriginvalue , 0 )  , 0  ,   
+                              decode(   bb.CATE_NAME , '鏈哄櫒璁惧'   , aa.localoriginvalue , 0 )  ,0 )   ) )  ,  0  )  fa_value_add_purchase_machine ,
                               
   
-  decode(dd.style_name, '在建工程转入'  ,decode( aa.accyear || aa.period  , '201801' ,  
-          decode( aa.newasset_flag , 1,  decode(   bb.CATE_NAME , '机器设备'   , aa.localoriginvalue , 0 ) , 0 ) , 
+  decode(dd.style_name, '鍦ㄥ缓宸ョ▼杞叆'  ,decode( aa.accyear || aa.period  , '201801' ,  
+          decode( aa.newasset_flag , 1,  decode(   bb.CATE_NAME , '鏈哄櫒璁惧'   , aa.localoriginvalue , 0 ) , 0 ) , 
           decode ( aa.accyear || aa.period  , macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep')  ,  0 , 
                     decode ( aa.newasset_flag  , 1 ,  
-                       decode(   bb.CATE_NAME , '机器设备'   , aa.localoriginvalue , 0 )  , 0  ,   
-                              decode(   bb.CATE_NAME , '机器设备'   , aa.localoriginvalue , 0 )  ,0 )   ) )  ,  0  )  fa_value_add_cons_machine ,
+                       decode(   bb.CATE_NAME , '鏈哄櫒璁惧'   , aa.localoriginvalue , 0 )  , 0  ,   
+                              decode(   bb.CATE_NAME , '鏈哄櫒璁惧'   , aa.localoriginvalue , 0 )  ,0 )   ) )  ,  0  )  fa_value_add_cons_machine ,
                               
   
   
-  decode(dd.style_name, '在建工程转入', 0 , '直接购入' , 0 , decode( aa.accyear || aa.period  , '201801' ,  
-          decode( aa.newasset_flag , 1,  decode(   bb.CATE_NAME , '机器设备'   , aa.localoriginvalue , 0 ) , 0 ) , 
+  decode(dd.style_name, '鍦ㄥ缓宸ョ▼杞叆', 0 , '鐩存帴璐叆' , 0 , decode( aa.accyear || aa.period  , '201801' ,  
+          decode( aa.newasset_flag , 1,  decode(   bb.CATE_NAME , '鏈哄櫒璁惧'   , aa.localoriginvalue , 0 ) , 0 ) , 
           decode ( aa.accyear || aa.period  , macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep')  ,  0 , 
                     decode ( aa.newasset_flag  , 1 ,  
-                       decode(   bb.CATE_NAME , '机器设备'   , aa.localoriginvalue , 0 )  , 0  ,   
-                              decode(   bb.CATE_NAME , '机器设备'   , aa.localoriginvalue , 0 )  ,0 )   ) ) )   fa_value_add_other_machine , 
+                       decode(   bb.CATE_NAME , '鏈哄櫒璁惧'   , aa.localoriginvalue , 0 )  , 0  ,   
+                              decode(   bb.CATE_NAME , '鏈哄櫒璁惧'   , aa.localoriginvalue , 0 )  ,0 )   ) ) )   fa_value_add_other_machine , 
            
                                                           
   decode( aa.accyear || aa.period  , '201801' ,  
-          decode( aa.newasset_flag , 1,  decode(   bb.CATE_NAME , '运输工具'   , aa.localoriginvalue , 0 ) , 0 ) , 
+          decode( aa.newasset_flag , 1,  decode(   bb.CATE_NAME , '杩愯緭宸ュ叿'   , aa.localoriginvalue , 0 ) , 0 ) , 
           decode ( aa.accyear || aa.period  , macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep')  ,  0 , 
                     decode ( aa.newasset_flag  , 1 ,  
-                       decode(   bb.CATE_NAME , '运输工具'   , aa.localoriginvalue , 0 )  , 0  ,   
-                              decode(   bb.CATE_NAME , '运输工具'   , aa.localoriginvalue , 0 )  ,0 )   ) )       
+                       decode(   bb.CATE_NAME , '杩愯緭宸ュ叿'   , aa.localoriginvalue , 0 )  , 0  ,   
+                              decode(   bb.CATE_NAME , '杩愯緭宸ュ叿'   , aa.localoriginvalue , 0 )  ,0 )   ) )       
                    fa_value_add_vehicle  ,    
                               
   
-  decode(dd.style_name, '直接购入' , decode( aa.accyear || aa.period  , '201801' ,  
-          decode( aa.newasset_flag , 1,  decode(   bb.CATE_NAME , '运输工具'   , aa.localoriginvalue , 0 ) , 0 ) , 
+  decode(dd.style_name, '鐩存帴璐叆' , decode( aa.accyear || aa.period  , '201801' ,  
+          decode( aa.newasset_flag , 1,  decode(   bb.CATE_NAME , '杩愯緭宸ュ叿'   , aa.localoriginvalue , 0 ) , 0 ) , 
           decode ( aa.accyear || aa.period  , macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep')  ,  0 , 
                     decode ( aa.newasset_flag  , 1 ,  
-                       decode(   bb.CATE_NAME , '运输工具'   , aa.localoriginvalue , 0 )  , 0  ,   
-                              decode(   bb.CATE_NAME , '运输工具'   , aa.localoriginvalue , 0 )  ,0 )   ) ),  0)  fa_value_add_purchase_vehicle, 
+                       decode(   bb.CATE_NAME , '杩愯緭宸ュ叿'   , aa.localoriginvalue , 0 )  , 0  ,   
+                              decode(   bb.CATE_NAME , '杩愯緭宸ュ叿'   , aa.localoriginvalue , 0 )  ,0 )   ) ),  0)  fa_value_add_purchase_vehicle, 
                              
-  decode(dd.style_name, '在建工程转入' , decode( aa.accyear || aa.period  , '201801' ,  
-          decode( aa.newasset_flag , 1,  decode(   bb.CATE_NAME , '运输工具'   , aa.localoriginvalue , 0 ) , 0 ) , 
+  decode(dd.style_name, '鍦ㄥ缓宸ョ▼杞叆' , decode( aa.accyear || aa.period  , '201801' ,  
+          decode( aa.newasset_flag , 1,  decode(   bb.CATE_NAME , '杩愯緭宸ュ叿'   , aa.localoriginvalue , 0 ) , 0 ) , 
           decode ( aa.accyear || aa.period  , macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep')  ,  0 , 
                     decode ( aa.newasset_flag  , 1 ,  
-                       decode(   bb.CATE_NAME , '运输工具'   , aa.localoriginvalue , 0 )  , 0  ,   
-                              decode(   bb.CATE_NAME , '运输工具'   , aa.localoriginvalue , 0 )  ,0 )   ) ) , 0)        fa_value_add_cons_vehicle   ,                    
+                       decode(   bb.CATE_NAME , '杩愯緭宸ュ叿'   , aa.localoriginvalue , 0 )  , 0  ,   
+                              decode(   bb.CATE_NAME , '杩愯緭宸ュ叿'   , aa.localoriginvalue , 0 )  ,0 )   ) ) , 0)        fa_value_add_cons_vehicle   ,                    
    
    
-  decode(dd.style_name, '在建工程转入', 0 , '直接购入' , 0 ,decode( aa.accyear || aa.period  , '201801' ,  
-          decode( aa.newasset_flag , 1,  decode(   bb.CATE_NAME , '运输工具'   , aa.localoriginvalue , 0 ) , 0 ) , 
+  decode(dd.style_name, '鍦ㄥ缓宸ョ▼杞叆', 0 , '鐩存帴璐叆' , 0 ,decode( aa.accyear || aa.period  , '201801' ,  
+          decode( aa.newasset_flag , 1,  decode(   bb.CATE_NAME , '杩愯緭宸ュ叿'   , aa.localoriginvalue , 0 ) , 0 ) , 
           decode ( aa.accyear || aa.period  , macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep')  ,  0 , 
                     decode ( aa.newasset_flag  , 1 ,  
-                       decode(   bb.CATE_NAME , '运输工具'   , aa.localoriginvalue , 0 )  , 0  ,   
-                              decode(   bb.CATE_NAME , '运输工具'   , aa.localoriginvalue , 0 )  ,0 )   ) ))  fa_value_add_other_vehicle , 
+                       decode(   bb.CATE_NAME , '杩愯緭宸ュ叿'   , aa.localoriginvalue , 0 )  , 0  ,   
+                              decode(   bb.CATE_NAME , '杩愯緭宸ュ叿'   , aa.localoriginvalue , 0 )  ,0 )   ) ))  fa_value_add_other_vehicle , 
    
                                                                          
     
-  decode ( bb.CATE_NAME , '房屋及建筑物' ,  0 ,'机器设备'  ,  0 ,  '运输工具'  , 0 ,   
+  decode ( bb.CATE_NAME , '鎴垮眿鍙婂缓绛戠墿' ,  0 ,'鏈哄櫒璁惧'  ,  0 ,  '杩愯緭宸ュ叿'  , 0 ,   
         decode( aa.accyear || aa.period  , '201801' ,  
           decode( aa.newasset_flag , 1,  aa.localoriginvalue , 0 ) , 
           decode ( aa.accyear || aa.period  , macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep')  ,  0 , 
@@ -410,7 +410,7 @@ select   cc.ASSET_CODE,cc.ASSET_NAME ,
    
    
    
-   decode(dd.style_name, '直接购入' , decode ( bb.CATE_NAME , '房屋及建筑物' ,  0 ,'机器设备'  ,  0 ,  '运输工具'  , 0 ,   
+   decode(dd.style_name, '鐩存帴璐叆' , decode ( bb.CATE_NAME , '鎴垮眿鍙婂缓绛戠墿' ,  0 ,'鏈哄櫒璁惧'  ,  0 ,  '杩愯緭宸ュ叿'  , 0 ,   
         decode( aa.accyear || aa.period  , '201801' ,  
           decode( aa.newasset_flag , 1,  aa.localoriginvalue , 0 ) , 
           decode ( aa.accyear || aa.period  , macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep')  ,  0 , 
@@ -418,7 +418,7 @@ select   cc.ASSET_CODE,cc.ASSET_NAME ,
    ) , 0 ) fa_value_add_purchase_other  , 
    
    
-   decode(dd.style_name, '在建工程转入', decode ( bb.CATE_NAME , '房屋及建筑物' ,  0 ,'机器设备'  ,  0 ,  '运输工具'  , 0 ,   
+   decode(dd.style_name, '鍦ㄥ缓宸ョ▼杞叆', decode ( bb.CATE_NAME , '鎴垮眿鍙婂缓绛戠墿' ,  0 ,'鏈哄櫒璁惧'  ,  0 ,  '杩愯緭宸ュ叿'  , 0 ,   
         decode( aa.accyear || aa.period  , '201801' ,  
           decode( aa.newasset_flag , 1,  aa.localoriginvalue , 0 ) , 
           decode ( aa.accyear || aa.period  , macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep')  ,  0 , 
@@ -426,7 +426,7 @@ select   cc.ASSET_CODE,cc.ASSET_NAME ,
    ) , 0 )   fa_value_add_cons_other , 
    
    
-   decode(dd.style_name, '在建工程转入', 0 , '直接购入' , 0 , decode ( bb.CATE_NAME , '房屋及建筑物' ,  0 ,'机器设备'  ,  0 ,  '运输工具'  , 0 ,   
+   decode(dd.style_name, '鍦ㄥ缓宸ョ▼杞叆', 0 , '鐩存帴璐叆' , 0 , decode ( bb.CATE_NAME , '鎴垮眿鍙婂缓绛戠墿' ,  0 ,'鏈哄櫒璁惧'  ,  0 ,  '杩愯緭宸ュ叿'  , 0 ,   
         decode( aa.accyear || aa.period  , '201801' ,  
           decode( aa.newasset_flag , 1,  aa.localoriginvalue , 0 ) , 
           decode ( aa.accyear || aa.period  , macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep')  ,  0 , 
@@ -442,122 +442,122 @@ select   cc.ASSET_CODE,cc.ASSET_NAME ,
                      
               
    decode( aa.accyear || aa.period  , '201801' ,  
-          decode( aa.newasset_flag , 1,  decode(   bb.CATE_NAME , '房屋及建筑物'   , aa.accudep , 0 ) , 0 ) , 
+          decode( aa.newasset_flag , 1,  decode(   bb.CATE_NAME , '鎴垮眿鍙婂缓绛戠墿'   , aa.accudep , 0 ) , 0 ) , 
           decode ( aa.accyear || aa.period  , macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep')  ,  0 , 
                     decode ( aa.newasset_flag  , 1 ,  
-                       decode(   bb.CATE_NAME , '房屋及建筑物'   , aa.accudep , 0 )  , 0  ,   
-                              decode(   bb.CATE_NAME , '房屋及建筑物'   , aa.accudep , 0 )  ,0 )   ) )    fa_accu_dep_add_building  , 
+                       decode(   bb.CATE_NAME , '鎴垮眿鍙婂缓绛戠墿'   , aa.accudep , 0 )  , 0  ,   
+                              decode(   bb.CATE_NAME , '鎴垮眿鍙婂缓绛戠墿'   , aa.accudep , 0 )  ,0 )   ) )    fa_accu_dep_add_building  , 
                               
                               
-    decode(dd.style_name, '直接购入' ,  decode( aa.accyear || aa.period  , '201801' ,  
-          decode( aa.newasset_flag , 1,  decode(   bb.CATE_NAME , '房屋及建筑物'   , aa.accudep , 0 ) , 0 ) , 
+    decode(dd.style_name, '鐩存帴璐叆' ,  decode( aa.accyear || aa.period  , '201801' ,  
+          decode( aa.newasset_flag , 1,  decode(   bb.CATE_NAME , '鎴垮眿鍙婂缓绛戠墿'   , aa.accudep , 0 ) , 0 ) , 
           decode ( aa.accyear || aa.period  , macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep')  ,  0 , 
                     decode ( aa.newasset_flag  , 1 ,  
-                       decode(   bb.CATE_NAME , '房屋及建筑物'   , aa.accudep , 0 )  , 0  ,   
-                              decode(   bb.CATE_NAME , '房屋及建筑物'   , aa.accudep , 0 )  ,0 )   ) ) , 0)     fa_accu_dep_add_pur_building , 
+                       decode(   bb.CATE_NAME , '鎴垮眿鍙婂缓绛戠墿'   , aa.accudep , 0 )  , 0  ,   
+                              decode(   bb.CATE_NAME , '鎴垮眿鍙婂缓绛戠墿'   , aa.accudep , 0 )  ,0 )   ) ) , 0)     fa_accu_dep_add_pur_building , 
     
-    decode(dd.style_name, '在建工程转入',  decode( aa.accyear || aa.period  , '201801' ,  
-          decode( aa.newasset_flag , 1,  decode(   bb.CATE_NAME , '房屋及建筑物'   , aa.accudep , 0 ) , 0 ) , 
+    decode(dd.style_name, '鍦ㄥ缓宸ョ▼杞叆',  decode( aa.accyear || aa.period  , '201801' ,  
+          decode( aa.newasset_flag , 1,  decode(   bb.CATE_NAME , '鎴垮眿鍙婂缓绛戠墿'   , aa.accudep , 0 ) , 0 ) , 
           decode ( aa.accyear || aa.period  , macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep')  ,  0 , 
                     decode ( aa.newasset_flag  , 1 ,  
-                       decode(   bb.CATE_NAME , '房屋及建筑物'   , aa.accudep , 0 )  , 0  ,   
-                              decode(   bb.CATE_NAME , '房屋及建筑物'   , aa.accudep , 0 )  ,0 )   ) ) ,   0 )  fa_accu_dep_add_cons_building , 
+                       decode(   bb.CATE_NAME , '鎴垮眿鍙婂缓绛戠墿'   , aa.accudep , 0 )  , 0  ,   
+                              decode(   bb.CATE_NAME , '鎴垮眿鍙婂缓绛戠墿'   , aa.accudep , 0 )  ,0 )   ) ) ,   0 )  fa_accu_dep_add_cons_building , 
     
-    decode(dd.style_name, '在建工程转入', 0 , '直接购入' , 0 ,  decode( aa.accyear || aa.period  , '201801' ,  
-          decode( aa.newasset_flag , 1,  decode(   bb.CATE_NAME , '房屋及建筑物'   , aa.accudep , 0 ) , 0 ) , 
+    decode(dd.style_name, '鍦ㄥ缓宸ョ▼杞叆', 0 , '鐩存帴璐叆' , 0 ,  decode( aa.accyear || aa.period  , '201801' ,  
+          decode( aa.newasset_flag , 1,  decode(   bb.CATE_NAME , '鎴垮眿鍙婂缓绛戠墿'   , aa.accudep , 0 ) , 0 ) , 
           decode ( aa.accyear || aa.period  , macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep')  ,  0 , 
                     decode ( aa.newasset_flag  , 1 ,  
-                       decode(   bb.CATE_NAME , '房屋及建筑物'   , aa.accudep , 0 )  , 0  ,   
-                              decode(   bb.CATE_NAME , '房屋及建筑物'   , aa.accudep , 0 )  ,0 )   ) )) fa_accu_dep_add_other_building , 
+                       decode(   bb.CATE_NAME , '鎴垮眿鍙婂缓绛戠墿'   , aa.accudep , 0 )  , 0  ,   
+                              decode(   bb.CATE_NAME , '鎴垮眿鍙婂缓绛戠墿'   , aa.accudep , 0 )  ,0 )   ) )) fa_accu_dep_add_other_building , 
                            
    
                               
                               
   decode( aa.accyear || aa.period  , '201801' ,  
-          decode( aa.newasset_flag , 1,  decode(   bb.CATE_NAME , '机器设备'   , aa.accudep , 0 ) , 0 ) , 
+          decode( aa.newasset_flag , 1,  decode(   bb.CATE_NAME , '鏈哄櫒璁惧'   , aa.accudep , 0 ) , 0 ) , 
           decode ( aa.accyear || aa.period  , macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep')  ,  0 , 
                     decode ( aa.newasset_flag  , 1 ,  
-                       decode(   bb.CATE_NAME , '机器设备'   , aa.accudep , 0 )  , 0  ,   
-                              decode(   bb.CATE_NAME , '机器设备'   , aa.accudep , 0 )  ,0 )   ) ) 
+                       decode(   bb.CATE_NAME , '鏈哄櫒璁惧'   , aa.accudep , 0 )  , 0  ,   
+                              decode(   bb.CATE_NAME , '鏈哄櫒璁惧'   , aa.accudep , 0 )  ,0 )   ) ) 
 							  fa_accu_dep_add_machine  , 
                               
    
    
-   decode(dd.style_name, '直接购入' , decode( aa.accyear || aa.period  , '201801' ,  
-          decode( aa.newasset_flag , 1,  decode(   bb.CATE_NAME , '机器设备'   , aa.accudep , 0 ) , 0 ) , 
+   decode(dd.style_name, '鐩存帴璐叆' , decode( aa.accyear || aa.period  , '201801' ,  
+          decode( aa.newasset_flag , 1,  decode(   bb.CATE_NAME , '鏈哄櫒璁惧'   , aa.accudep , 0 ) , 0 ) , 
           decode ( aa.accyear || aa.period  , macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep')  ,  0 , 
                     decode ( aa.newasset_flag  , 1 ,  
-                       decode(   bb.CATE_NAME , '机器设备'   , aa.accudep , 0 )  , 0  ,   
-                              decode(   bb.CATE_NAME , '机器设备'   , aa.accudep , 0 )  ,0 )   ) )  , 0 )    fa_accu_dep_add_pur_machine ,   
+                       decode(   bb.CATE_NAME , '鏈哄櫒璁惧'   , aa.accudep , 0 )  , 0  ,   
+                              decode(   bb.CATE_NAME , '鏈哄櫒璁惧'   , aa.accudep , 0 )  ,0 )   ) )  , 0 )    fa_accu_dep_add_pur_machine ,   
    
-   decode(dd.style_name, '在建工程转入', decode( aa.accyear || aa.period  , '201801' ,  
-          decode( aa.newasset_flag , 1,  decode(   bb.CATE_NAME , '机器设备'   , aa.accudep , 0 ) , 0 ) , 
+   decode(dd.style_name, '鍦ㄥ缓宸ョ▼杞叆', decode( aa.accyear || aa.period  , '201801' ,  
+          decode( aa.newasset_flag , 1,  decode(   bb.CATE_NAME , '鏈哄櫒璁惧'   , aa.accudep , 0 ) , 0 ) , 
           decode ( aa.accyear || aa.period  , macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep')  ,  0 , 
                     decode ( aa.newasset_flag  , 1 ,  
-                       decode(   bb.CATE_NAME , '机器设备'   , aa.accudep , 0 )  , 0  ,   
-                              decode(   bb.CATE_NAME , '机器设备'   , aa.accudep , 0 )  ,0 )   ) )  , 0)  fa_accu_dep_add_cons_machine , 
+                       decode(   bb.CATE_NAME , '鏈哄櫒璁惧'   , aa.accudep , 0 )  , 0  ,   
+                              decode(   bb.CATE_NAME , '鏈哄櫒璁惧'   , aa.accudep , 0 )  ,0 )   ) )  , 0)  fa_accu_dep_add_cons_machine , 
    
-   decode(dd.style_name, '在建工程转入', 0 , '直接购入' , 0 ,decode( aa.accyear || aa.period  , '201801' ,  
-          decode( aa.newasset_flag , 1,  decode(   bb.CATE_NAME , '机器设备'   , aa.accudep , 0 ) , 0 ) , 
+   decode(dd.style_name, '鍦ㄥ缓宸ョ▼杞叆', 0 , '鐩存帴璐叆' , 0 ,decode( aa.accyear || aa.period  , '201801' ,  
+          decode( aa.newasset_flag , 1,  decode(   bb.CATE_NAME , '鏈哄櫒璁惧'   , aa.accudep , 0 ) , 0 ) , 
           decode ( aa.accyear || aa.period  , macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep')  ,  0 , 
                     decode ( aa.newasset_flag  , 1 ,  
-                       decode(   bb.CATE_NAME , '机器设备'   , aa.accudep , 0 )  , 0  ,   
-                              decode(   bb.CATE_NAME , '机器设备'   , aa.accudep , 0 )  ,0 )   ) ) )  fa_accu_dep_add_other_machine , 
+                       decode(   bb.CATE_NAME , '鏈哄櫒璁惧'   , aa.accudep , 0 )  , 0  ,   
+                              decode(   bb.CATE_NAME , '鏈哄櫒璁惧'   , aa.accudep , 0 )  ,0 )   ) ) )  fa_accu_dep_add_other_machine , 
                          
                                                           
   decode( aa.accyear || aa.period  , '201801' ,  
-          decode( aa.newasset_flag , 1,  decode(   bb.CATE_NAME , '运输工具'   , aa.accudep , 0 ) , 0 ) , 
+          decode( aa.newasset_flag , 1,  decode(   bb.CATE_NAME , '杩愯緭宸ュ叿'   , aa.accudep , 0 ) , 0 ) , 
           decode ( aa.accyear || aa.period  , macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep')  ,  0 , 
                     decode ( aa.newasset_flag  , 1 ,  
-                       decode(   bb.CATE_NAME , '运输工具'   , aa.accudep , 0 )  , 0  ,   
-                              decode(   bb.CATE_NAME , '运输工具'   , aa.accudep , 0 )  ,0 )   ) )  fa_accu_dep_add_vehicle    , 
+                       decode(   bb.CATE_NAME , '杩愯緭宸ュ叿'   , aa.accudep , 0 )  , 0  ,   
+                              decode(   bb.CATE_NAME , '杩愯緭宸ュ叿'   , aa.accudep , 0 )  ,0 )   ) )  fa_accu_dep_add_vehicle    , 
                               
    
    
-  decode(dd.style_name, '直接购入' , decode( aa.accyear || aa.period  , '201801' ,  
-          decode( aa.newasset_flag , 1,  decode(   bb.CATE_NAME , '运输工具'   , aa.accudep , 0 ) , 0 ) , 
+  decode(dd.style_name, '鐩存帴璐叆' , decode( aa.accyear || aa.period  , '201801' ,  
+          decode( aa.newasset_flag , 1,  decode(   bb.CATE_NAME , '杩愯緭宸ュ叿'   , aa.accudep , 0 ) , 0 ) , 
           decode ( aa.accyear || aa.period  , macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep')  ,  0 , 
                     decode ( aa.newasset_flag  , 1 ,  
-                       decode(   bb.CATE_NAME , '运输工具'   , aa.accudep , 0 )  , 0  ,   
-                              decode(   bb.CATE_NAME , '运输工具'   , aa.accudep , 0 )  ,0 )   ) ) , 0 )    fa_accu_dep_add_pur_vehicle ,   
+                       decode(   bb.CATE_NAME , '杩愯緭宸ュ叿'   , aa.accudep , 0 )  , 0  ,   
+                              decode(   bb.CATE_NAME , '杩愯緭宸ュ叿'   , aa.accudep , 0 )  ,0 )   ) ) , 0 )    fa_accu_dep_add_pur_vehicle ,   
    
-   decode(dd.style_name, '在建工程转入', decode( aa.accyear || aa.period  , '201801' ,  
-          decode( aa.newasset_flag , 1,  decode(   bb.CATE_NAME , '运输工具'   , aa.accudep , 0 ) , 0 ) , 
+   decode(dd.style_name, '鍦ㄥ缓宸ョ▼杞叆', decode( aa.accyear || aa.period  , '201801' ,  
+          decode( aa.newasset_flag , 1,  decode(   bb.CATE_NAME , '杩愯緭宸ュ叿'   , aa.accudep , 0 ) , 0 ) , 
           decode ( aa.accyear || aa.period  , macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep')  ,  0 , 
                     decode ( aa.newasset_flag  , 1 ,  
-                       decode(   bb.CATE_NAME , '运输工具'   , aa.accudep , 0 )  , 0  ,   
-                              decode(   bb.CATE_NAME , '运输工具'   , aa.accudep , 0 )  ,0 )   ) ) , 0)  fa_accu_dep_add_cons_vehicle , 
+                       decode(   bb.CATE_NAME , '杩愯緭宸ュ叿'   , aa.accudep , 0 )  , 0  ,   
+                              decode(   bb.CATE_NAME , '杩愯緭宸ュ叿'   , aa.accudep , 0 )  ,0 )   ) ) , 0)  fa_accu_dep_add_cons_vehicle , 
    
-   decode(dd.style_name, '在建工程转入', 0 , '直接购入' , 0 ,decode( aa.accyear || aa.period  , '201801' ,  
-          decode( aa.newasset_flag , 1,  decode(   bb.CATE_NAME , '运输工具'   , aa.accudep , 0 ) , 0 ) , 
+   decode(dd.style_name, '鍦ㄥ缓宸ョ▼杞叆', 0 , '鐩存帴璐叆' , 0 ,decode( aa.accyear || aa.period  , '201801' ,  
+          decode( aa.newasset_flag , 1,  decode(   bb.CATE_NAME , '杩愯緭宸ュ叿'   , aa.accudep , 0 ) , 0 ) , 
           decode ( aa.accyear || aa.period  , macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep')  ,  0 , 
                     decode ( aa.newasset_flag  , 1 ,  
-                       decode(   bb.CATE_NAME , '运输工具'   , aa.accudep , 0 )  , 0  ,   
-                              decode(   bb.CATE_NAME , '运输工具'   , aa.accudep , 0 )  ,0 )   ) ))  fa_accu_dep_add_other_vehicle ,                             
+                       decode(   bb.CATE_NAME , '杩愯緭宸ュ叿'   , aa.accudep , 0 )  , 0  ,   
+                              decode(   bb.CATE_NAME , '杩愯緭宸ュ叿'   , aa.accudep , 0 )  ,0 )   ) ))  fa_accu_dep_add_other_vehicle ,                             
   
                            
-  decode ( bb.CATE_NAME , '房屋及建筑物' ,  0 ,'机器设备' , 0 ,  '运输工具', 0 , 
+  decode ( bb.CATE_NAME , '鎴垮眿鍙婂缓绛戠墿' ,  0 ,'鏈哄櫒璁惧' , 0 ,  '杩愯緭宸ュ叿', 0 , 
        decode( aa.accyear || aa.period  , '201801' ,  
           decode( aa.newasset_flag , 1,  aa.accudep , 0 ) , 
           decode ( aa.accyear || aa.period  , macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep')  ,  0 , 
                     decode ( aa.newasset_flag  , 1 ,  
                       aa.accudep  , 0  ,  aa.accudep  ,0 )   ) ))    fa_accu_dep_add_other , 
    
-   decode(dd.style_name, '直接购入' ,   decode ( bb.CATE_NAME , '房屋及建筑物' ,  0 ,'机器设备' , 0 ,  '运输工具', 0 , 
+   decode(dd.style_name, '鐩存帴璐叆' ,   decode ( bb.CATE_NAME , '鎴垮眿鍙婂缓绛戠墿' ,  0 ,'鏈哄櫒璁惧' , 0 ,  '杩愯緭宸ュ叿', 0 , 
        decode( aa.accyear || aa.period  , '201801' ,  
           decode( aa.newasset_flag , 1,  aa.accudep , 0 ) , 
           decode ( aa.accyear || aa.period  , macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep')  ,  0 , 
                     decode ( aa.newasset_flag  , 1 ,  
                       aa.accudep  , 0  ,  aa.accudep  ,0 )   ) )) , 0 )    fa_accu_dep_add_pur_other ,   
    
-   decode(dd.style_name, '在建工程转入',   decode ( bb.CATE_NAME , '房屋及建筑物' ,  0 ,'机器设备' , 0 ,  '运输工具', 0 , 
+   decode(dd.style_name, '鍦ㄥ缓宸ョ▼杞叆',   decode ( bb.CATE_NAME , '鎴垮眿鍙婂缓绛戠墿' ,  0 ,'鏈哄櫒璁惧' , 0 ,  '杩愯緭宸ュ叿', 0 , 
        decode( aa.accyear || aa.period  , '201801' ,  
           decode( aa.newasset_flag , 1,  aa.accudep , 0 ) , 
           decode ( aa.accyear || aa.period  , macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep')  ,  0 , 
                     decode ( aa.newasset_flag  , 1 ,  
                       aa.accudep  , 0  ,  aa.accudep  ,0 )   ) )) , 0)  fa_accu_dep_add_cons_other , 
    
-   decode(dd.style_name, '在建工程转入', 0 , '直接购入' , 0 ,  decode ( bb.CATE_NAME , '房屋及建筑物' ,  0 ,'机器设备' , 0 ,  '运输工具', 0 , 
+   decode(dd.style_name, '鍦ㄥ缓宸ョ▼杞叆', 0 , '鐩存帴璐叆' , 0 ,  decode ( bb.CATE_NAME , '鎴垮眿鍙婂缓绛戠墿' ,  0 ,'鏈哄櫒璁惧' , 0 ,  '杩愯緭宸ュ叿', 0 , 
        decode( aa.accyear || aa.period  , '201801' ,  
           decode( aa.newasset_flag , 1,  aa.accudep , 0 ) , 
           decode ( aa.accyear || aa.period  , macro('m_fa_end_year_dep') || macro('m_fa_end_month_dep')  ,  0 , 
@@ -569,43 +569,43 @@ select   cc.ASSET_CODE,cc.ASSET_NAME ,
            decode(  aa.asset_state ,'reduce' ,  aa.localoriginvalue , 0 ) )  fa_value_reduce ,
 
 
-  decode( nvl(ff.style_name,'~')  , '报废' ,decode( aa.accyear||aa.period  , parameter('begin_year_param') || parameter('begin_month_param') , 0 , 
+  decode( nvl(ff.style_name,'~')  , '鎶ュ簾' ,decode( aa.accyear||aa.period  , parameter('begin_year_param') || parameter('begin_month_param') , 0 , 
            decode(  aa.asset_state ,'reduce' , 
-              decode(   bb.CATE_NAME , '运输工具'   , aa.localoriginvalue , 0 ) , 0 ) )  , 0 ) fa_value_red_useless_vehicle  , 
+              decode(   bb.CATE_NAME , '杩愯緭宸ュ叿'   , aa.localoriginvalue , 0 ) , 0 ) )  , 0 ) fa_value_red_useless_vehicle  , 
    
    
-   decode( nvl(ff.style_name,'~')  , '报废' ,decode( aa.accyear||aa.period  , parameter('begin_year_param') || parameter('begin_month_param') , 0 , 
+   decode( nvl(ff.style_name,'~')  , '鎶ュ簾' ,decode( aa.accyear||aa.period  , parameter('begin_year_param') || parameter('begin_month_param') , 0 , 
            decode(  aa.asset_state ,'reduce' , 
-              decode(   bb.CATE_NAME , '机器设备'   , aa.localoriginvalue , 0 ) , 0 ) )  , 0 ) fa_value_red_useless_machine  , 
+              decode(   bb.CATE_NAME , '鏈哄櫒璁惧'   , aa.localoriginvalue , 0 ) , 0 ) )  , 0 ) fa_value_red_useless_machine  , 
    
    
-   decode( nvl(ff.style_name,'~')  , '报废' ,decode( aa.accyear||aa.period  , parameter('begin_year_param') || parameter('begin_month_param') , 0 , 
+   decode( nvl(ff.style_name,'~')  , '鎶ュ簾' ,decode( aa.accyear||aa.period  , parameter('begin_year_param') || parameter('begin_month_param') , 0 , 
            decode(  aa.asset_state ,'reduce' , 
-              decode(   bb.CATE_NAME , '房屋及建筑物'   , aa.localoriginvalue , 0 ) , 0 ) )  , 0 ) fa_value_red_useless_building  , 
+              decode(   bb.CATE_NAME , '鎴垮眿鍙婂缓绛戠墿'   , aa.localoriginvalue , 0 ) , 0 ) )  , 0 ) fa_value_red_useless_building  , 
               
-   decode( nvl(ff.style_name,'~')  , '报废' ,decode( aa.accyear||aa.period  , parameter('begin_year_param') || parameter('begin_month_param') , 0 , 
+   decode( nvl(ff.style_name,'~')  , '鎶ュ簾' ,decode( aa.accyear||aa.period  , parameter('begin_year_param') || parameter('begin_month_param') , 0 , 
            decode(  aa.asset_state ,'reduce' , 
-              decode(   bb.CATE_NAME , '房屋及建筑物' , 0 ,'运输工具', 0 , '机器设备' ,0,  aa.localoriginvalue ) , 0 ) )  , 0 ) fa_value_red_useless_other  ,            
+              decode(   bb.CATE_NAME , '鎴垮眿鍙婂缓绛戠墿' , 0 ,'杩愯緭宸ュ叿', 0 , '鏈哄櫒璁惧' ,0,  aa.localoriginvalue ) , 0 ) )  , 0 ) fa_value_red_useless_other  ,            
               
               
            
-      decode( nvl(ff.style_name,'~')  , '报废' ,0 ,'~' , 0 ,  decode( aa.accyear||aa.period  , parameter('begin_year_param') || parameter('begin_month_param') , 0 , 
+      decode( nvl(ff.style_name,'~')  , '鎶ュ簾' ,0 ,'~' , 0 ,  decode( aa.accyear||aa.period  , parameter('begin_year_param') || parameter('begin_month_param') , 0 , 
            decode(  aa.asset_state ,'reduce' , 
-              decode(   bb.CATE_NAME , '运输工具'   , aa.localoriginvalue , 0 ) , 0 ) )  ) fa_value_red_other_vehicle  , 
+              decode(   bb.CATE_NAME , '杩愯緭宸ュ叿'   , aa.localoriginvalue , 0 ) , 0 ) )  ) fa_value_red_other_vehicle  , 
    
    
-   decode( nvl(ff.style_name,'~')  , '报废' , 0 , '~' ,0 , decode( aa.accyear||aa.period  , parameter('begin_year_param') || parameter('begin_month_param') , 0 , 
+   decode( nvl(ff.style_name,'~')  , '鎶ュ簾' , 0 , '~' ,0 , decode( aa.accyear||aa.period  , parameter('begin_year_param') || parameter('begin_month_param') , 0 , 
            decode(  aa.asset_state ,'reduce' , 
-              decode(   bb.CATE_NAME , '机器设备'   , aa.localoriginvalue , 0 ) , 0 ) ) ) fa_value_red_other_machine  , 
+              decode(   bb.CATE_NAME , '鏈哄櫒璁惧'   , aa.localoriginvalue , 0 ) , 0 ) ) ) fa_value_red_other_machine  , 
    
    
-   decode( nvl(ff.style_name,'~')  , '报废' , 0 , '~' , 0 ,decode( aa.accyear||aa.period  , parameter('begin_year_param') || parameter('begin_month_param') , 0 , 
+   decode( nvl(ff.style_name,'~')  , '鎶ュ簾' , 0 , '~' , 0 ,decode( aa.accyear||aa.period  , parameter('begin_year_param') || parameter('begin_month_param') , 0 , 
            decode(  aa.asset_state ,'reduce' , 
-              decode(   bb.CATE_NAME , '房屋及建筑物'   , aa.localoriginvalue , 0 ) , 0 ) ) ) fa_value_red_other_building  , 
+              decode(   bb.CATE_NAME , '鎴垮眿鍙婂缓绛戠墿'   , aa.localoriginvalue , 0 ) , 0 ) ) ) fa_value_red_other_building  , 
               
-   decode( nvl(ff.style_name,'~')  , '报废' , 0 , '~', 0 , decode( aa.accyear||aa.period  , parameter('begin_year_param') || parameter('begin_month_param') , 0 , 
+   decode( nvl(ff.style_name,'~')  , '鎶ュ簾' , 0 , '~', 0 , decode( aa.accyear||aa.period  , parameter('begin_year_param') || parameter('begin_month_param') , 0 , 
            decode(  aa.asset_state ,'reduce' , 
-              decode(   bb.CATE_NAME , '房屋及建筑物' , 0 ,'运输工具', 0 , '机器设备' ,0,  aa.localoriginvalue  ) , 0 ) ) ) fa_value_red_other_other , 
+              decode(   bb.CATE_NAME , '鎴垮眿鍙婂缓绛戠墿' , 0 ,'杩愯緭宸ュ叿', 0 , '鏈哄櫒璁惧' ,0,  aa.localoriginvalue  ) , 0 ) ) ) fa_value_red_other_other , 
 
                  
 
@@ -613,45 +613,45 @@ select   cc.ASSET_CODE,cc.ASSET_NAME ,
            decode(  aa.asset_state ,'reduce' ,  aa.accudep , 0 ) )     fa_accu_dep_reduce    , 
            
            
-    decode( nvl(ff.style_name,'~')  , '报废' ,decode( aa.accyear||aa.period  , parameter('begin_year_param') || parameter('begin_month_param') , 0 ,
+    decode( nvl(ff.style_name,'~')  , '鎶ュ簾' ,decode( aa.accyear||aa.period  , parameter('begin_year_param') || parameter('begin_month_param') , 0 ,
           decode(  aa.asset_state ,'reduce' ,
-          decode(   bb.CATE_NAME , '运输工具'   ,  aa.accudep , 0 ) , 0 ) )  , 0 ) fa_accu_dep_red_ul_vehicle  ,
+          decode(   bb.CATE_NAME , '杩愯緭宸ュ叿'   ,  aa.accudep , 0 ) , 0 ) )  , 0 ) fa_accu_dep_red_ul_vehicle  ,
           
           
-     decode( nvl(ff.style_name,'~')  , '报废' ,decode( aa.accyear||aa.period  , parameter('begin_year_param') || parameter('begin_month_param') , 0 ,
+     decode( nvl(ff.style_name,'~')  , '鎶ュ簾' ,decode( aa.accyear||aa.period  , parameter('begin_year_param') || parameter('begin_month_param') , 0 ,
           decode(  aa.asset_state ,'reduce' ,
-          decode(   bb.CATE_NAME , '房屋及建筑物'   ,  aa.accudep , 0 ) , 0 ) )  , 0 ) fa_accu_dep_red_ul_building  ,   
+          decode(   bb.CATE_NAME , '鎴垮眿鍙婂缓绛戠墿'   ,  aa.accudep , 0 ) , 0 ) )  , 0 ) fa_accu_dep_red_ul_building  ,   
           
           
-     decode( nvl(ff.style_name,'~')  , '报废' ,decode( aa.accyear||aa.period  , parameter('begin_year_param') || parameter('begin_month_param') , 0 ,
+     decode( nvl(ff.style_name,'~')  , '鎶ュ簾' ,decode( aa.accyear||aa.period  , parameter('begin_year_param') || parameter('begin_month_param') , 0 ,
           decode(  aa.asset_state ,'reduce' ,
-          decode(   bb.CATE_NAME , '机器设备'   ,  aa.accudep , 0 ) , 0 ) )  , 0 ) fa_accu_dep_red_ul_machine  ,                   
+          decode(   bb.CATE_NAME , '鏈哄櫒璁惧'   ,  aa.accudep , 0 ) , 0 ) )  , 0 ) fa_accu_dep_red_ul_machine  ,                   
            
        
-       decode( nvl(ff.style_name,'~')  , '报废' ,decode( aa.accyear||aa.period  , parameter('begin_year_param') || parameter('begin_month_param') , 0 ,
+       decode( nvl(ff.style_name,'~')  , '鎶ュ簾' ,decode( aa.accyear||aa.period  , parameter('begin_year_param') || parameter('begin_month_param') , 0 ,
           decode(  aa.asset_state ,'reduce' ,
-          decode(   bb.CATE_NAME , '机器设备'   , 0 , '房屋及建筑物' ,0 , '运输工具', 0 ,    aa.accudep ) , 0 ) )  , 0 ) fa_accu_dep_red_ul_other ,   
+          decode(   bb.CATE_NAME , '鏈哄櫒璁惧'   , 0 , '鎴垮眿鍙婂缓绛戠墿' ,0 , '杩愯緭宸ュ叿', 0 ,    aa.accudep ) , 0 ) )  , 0 ) fa_accu_dep_red_ul_other ,   
           
                     
            
-   decode( nvl(ff.style_name,'~')  , '报废' , 0 , '~', 0 , decode( aa.accyear||aa.period  , parameter('begin_year_param') || parameter('begin_month_param') , 0 ,
+   decode( nvl(ff.style_name,'~')  , '鎶ュ簾' , 0 , '~', 0 , decode( aa.accyear||aa.period  , parameter('begin_year_param') || parameter('begin_month_param') , 0 ,
           decode(  aa.asset_state ,'reduce' ,
-          decode(   bb.CATE_NAME , '运输工具'   ,  aa.accudep , 0 ) , 0 ) )   ) fa_accu_dep_red_other_vehicle  ,
+          decode(   bb.CATE_NAME , '杩愯緭宸ュ叿'   ,  aa.accudep , 0 ) , 0 ) )   ) fa_accu_dep_red_other_vehicle  ,
           
           
-     decode( nvl(ff.style_name,'~')  , '报废' , 0 , '~', 0 , decode( aa.accyear||aa.period  , parameter('begin_year_param') || parameter('begin_month_param') , 0 ,
+     decode( nvl(ff.style_name,'~')  , '鎶ュ簾' , 0 , '~', 0 , decode( aa.accyear||aa.period  , parameter('begin_year_param') || parameter('begin_month_param') , 0 ,
           decode(  aa.asset_state ,'reduce' ,
-          decode(   bb.CATE_NAME , '房屋及建筑物'   ,  aa.accudep , 0 ) , 0 ) )   ) fa_accu_dep_red_other_building  ,   
+          decode(   bb.CATE_NAME , '鎴垮眿鍙婂缓绛戠墿'   ,  aa.accudep , 0 ) , 0 ) )   ) fa_accu_dep_red_other_building  ,   
           
           
-     decode( nvl(ff.style_name,'~')  , '报废' , 0, '~' , 0 , decode( aa.accyear||aa.period  , parameter('begin_year_param') || parameter('begin_month_param') , 0 ,
+     decode( nvl(ff.style_name,'~')  , '鎶ュ簾' , 0, '~' , 0 , decode( aa.accyear||aa.period  , parameter('begin_year_param') || parameter('begin_month_param') , 0 ,
           decode(  aa.asset_state ,'reduce' ,
-          decode(   bb.CATE_NAME , '机器设备'   ,  aa.accudep , 0 ) , 0 ) )  ) fa_accu_dep_red_other_machine  ,                  
+          decode(   bb.CATE_NAME , '鏈哄櫒璁惧'   ,  aa.accudep , 0 ) , 0 ) )  ) fa_accu_dep_red_other_machine  ,                  
            
        
-       decode( nvl(ff.style_name,'~')  , '报废' ,  0 , '~' , 0  , decode( aa.accyear||aa.period  , parameter('begin_year_param') || parameter('begin_month_param') , 0 ,
+       decode( nvl(ff.style_name,'~')  , '鎶ュ簾' ,  0 , '~' , 0  , decode( aa.accyear||aa.period  , parameter('begin_year_param') || parameter('begin_month_param') , 0 ,
           decode(  aa.asset_state ,'reduce' ,
-          decode(   bb.CATE_NAME , '机器设备'   , 0 , '房屋及建筑物' ,0 , '运输工具', 0 ,    aa.accudep ) , 0 ) )  ) fa_accu_dep_red_other_other   
+          decode(   bb.CATE_NAME , '鏈哄櫒璁惧'   , 0 , '鎴垮眿鍙婂缓绛戠墿' ,0 , '杩愯緭宸ュ叿', 0 ,    aa.accudep ) , 0 ) )  ) fa_accu_dep_red_other_other   
 		  
              	
               
