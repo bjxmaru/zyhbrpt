@@ -1,5 +1,5 @@
 select the_rownum ,    proj_code ,  org_code, org_name,
-beg_bal ,bal_add, bal_tx , bal_reduce , end_bal ,  dx_children , dx_self , dx_self_children  
+beg_bal ,bal_add, bal_tx , bal_reduce , end_bal ,  dx_children 
 from 
 (
 select cc.code||'_'||aa.keyword3  the_rownum ,    
