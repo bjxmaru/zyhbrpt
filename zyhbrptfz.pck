@@ -6,7 +6,7 @@ create or replace package zyhbrptfz  authid current_user is
    cursor cur_tb_beg(org_code_param varchar2 , subj_code_param varchar2 , beg_year_param varchar2  ,beg_month_param varchar2 , 
      end_year_param varchar2  , end_month_param varchar2  )  
     is
-    select  pk_org  , org_code , org_name , pk_account , subj_code , subj_name , disp_name, 
+    select   pk_org  , org_code , org_name , pk_account , subj_code , subj_name , disp_name, 
        balanorient , ks_code , ks_name, ks_pk , voucher_date ,  year_month , amount  ,'n' handle_mark  
     from 
     (
@@ -218,7 +218,7 @@ end zyhbrptfz;
 /
 create or replace package body zyhbrptfz is
 
- l_create_sequence varchar2(2000) := 'CREATE SEQUENCE SEQ_arap INCREMENT BY 1  START WITH 1  NOMAXvalue  NOCYCLE  NOCACHE' ; 
+ l_create_sequence varchar2(2000) := 'CREATE  SEQUENCE SEQ_arap INCREMENT BY 1  START WITH 1  NOMAXvalue  NOCYCLE  NOCACHE' ; 
 
 
  l_insert_arap_age_year_month  varchar2(2000)  := 'insert into  zyhb_arap_age_year_month values( :pk_number ,:pk_org , :org_code , :org_name, :pk_account ,    ' ||
@@ -228,17 +228,17 @@ create or replace package body zyhbrptfz is
                        
   
  l_delete_arap_age_year_month  varchar2(2000)  :=
-  ' delete from  zyhb_arap_age_year_month where  year_month > :beg_year_month_param ' ;                   
+  ' delete from  zyhb_arap_age_year_month where  year_month > :beg_year_month_param  and subj_code like :subj_code_param  and org_code = :org_code_param ' ;                   
                        
  l_delete_arap_age_year_month_1  varchar2(2000)  :=
-  ' delete from  zyhb_arap_age_year_month where  year_month >= :beg_year_month_param  ' ;  
+  ' delete from  zyhb_arap_age_year_month where  year_month >= :beg_year_month_param and subj_code like :subj_code_param  and org_code = :org_code_param  ' ;  
 
- l_arap_creat_table_1 varchar2(2000) := ' create table zyhb_arap_age_year_month ( pk_number number(38) ,pk_org varchar2(20) , ' 
+ l_arap_creat_table_1 varchar2(2000) := ' create table zyhb_arap_age_year_month ( pk_number number(38) primary key ,pk_org varchar2(20) , ' 
       || 'org_code varchar2(40), org_name varchar2(300) , 
 	   pk_account varchar2(20), subj_code   varchar2(40), subj_name  varchar2(300), 
 	   disp_name varchar2(300), balanorient NUMBER(28,8), ks_code varchar2(300), 
 	   ks_name varchar2(300), ks_pk  varchar2(300) , voucher_date varchar2(10) , 
-	   amount  NUMBER(28,8) ,year_month varchar2(6) ,PRIMARY KEY (org_code,subj_code, ks_code) )' ;  
+	   amount  NUMBER(28,8) ,year_month varchar2(6)  )' ;  
      
  l_idx_arap_age_year_month varchar2(2000) :=  ' create index  idx_arap_age on zyhb_arap_age_year_month (year_month) ' ; 
  
@@ -634,11 +634,13 @@ is
  
       if( init_mark = 'y') then
        
-          execute immediate  l_delete_arap_age_year_month_1   using beg_year_param|| beg_month_param; 
+          execute immediate  l_delete_arap_age_year_month_1   
+          using beg_year_param|| beg_month_param , subj_code_param ,org_code_param; 
       
       else  
  
-      execute immediate  l_delete_arap_age_year_month   using beg_year_param||beg_month_param; 
+      execute immediate  l_delete_arap_age_year_month   
+          using beg_year_param||beg_month_param  , subj_code_param ,org_code_param; 
       
       end if; 
  
@@ -702,7 +704,7 @@ is
       
       commit; 
       
-  
+  /*
    exception 
    
          when  others    then 
@@ -713,7 +715,7 @@ is
  
  
  							rollback to p_hx ;  
-              
+    */          
    
  end ; 
  
