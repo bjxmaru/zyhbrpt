@@ -1,13 +1,5 @@
 create or replace package sy_sum is
 
-
- 
-
-                           
-
-      
-
-
 cursor cur_f_arap(     p_end_date          varchar2 default sy_base.V_TMP_CURR_DATE_STR_10,
                             p_org_code          varchar2 default '102',
                             p_arap_class_hb     varchar2 default 'ysfl_zlze_1jkmhb_hz',

@@ -97,7 +97,8 @@ select  aa.pk_financeorg pk_org , aa.code org_code, aa.name org_name  ,  ff.pk_a
         ff.code  subj_code , ee.name subj_name , ee.dispname  disp_name , gg.balanorient,
        nvl(ii.code , ee.dispname) ks_code ,nvl(ii.name , ee.dispname) ks_name, nvl(ii.pk_cust_sup ,ee.dispname) ks_pk ,
        substr(cc.PREPAREDDATEV , 1, 10)  voucher_date  ,
-       decode( gg.balanorient, 0,   cc.localdebitamount - cc.localcreditamount ,  cc.localcreditamount -  cc.localdebitamount )  amount , 
+       decode( gg.balanorient, 0,   cc.localdebitamount - cc.localcreditamount ,  
+       cc.localcreditamount -  cc.localdebitamount )  amount , 
        end_year_param ||end_month_param   year_month 
       
 from  org_financeorg aa  
