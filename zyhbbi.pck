@@ -27,9 +27,11 @@ type nt_orgbook_info is table of cur_orgbook_info%rowtype  ;
 
 
 cursor cur_arap_dd(pk_accountingbook_param varchar2 default '1000' , 
-                subj_code_param varchar2 default '^1122.*$'  ,
+                subj_code_param varchar2 default '1122.*$'  ,
+                subj_code_param_oppo  varchar2 default '2203.*$',
                 end_date_param varchar2 default '2018-06-30' , 
                 dir_param   pls_integer  default  0  , 
+                dir_param_oppo   pls_integer  default  1  , 
                 ks_class_param varchar2 default '[^(¼¯ÍÅÄÚ)]'  , 
                 p_perious_date_0    date default add_months(to_date(V_TMP_CURR_DATE_STR,
                                                                                 V_DATE_FORMAT_19),
@@ -754,9 +756,6 @@ gl_with_age_info  as
 gl_with_age_info_sum as 
 (
 select
-/*    '~' subj_code, '~' subj_name , '~' disp_name , '~' balanorient ,  
-     '~' bal_filter_dir_bz ,  '~' aux_code ,aux_name ,   
-     '~' aux_class_cust , '~' aux_class_supplier , */
     sum( localdebitamount) localdebitamount , 
     sum(localcreditamount ) localcreditamount , 
     sum(bal) bal , 
