@@ -28,10 +28,8 @@ type nt_orgbook_info is table of cur_orgbook_info%rowtype  ;
 
 cursor cur_arap_dd(pk_accountingbook_param varchar2 default '1000' , 
                 subj_code_param varchar2 default '1122.*$'  ,
-                subj_code_param_oppo  varchar2 default '2203.*$',
                 end_date_param varchar2 default '2018-06-30' , 
                 dir_param   pls_integer  default  0  , 
-                dir_param_oppo   pls_integer  default  1  , 
                 ks_class_param varchar2 default '[^(集团内)]'  , 
                 p_perious_date_0    date default add_months(to_date(V_TMP_CURR_DATE_STR,
                                                                                 V_DATE_FORMAT_19),
@@ -785,6 +783,131 @@ function f_arap(org_code_param varchar2 default '1000' ,
 return nt_arap
 pipelined ;
 
+
+
+cursor cur_tb_test(pk_accountingbook_param varchar2 default '1000' , 
+                subj_code_param varchar2 default '1122.*$'  ,
+                end_date_param varchar2 default '2018-06-30' , 
+                dir_param   pls_integer  default  0  , 
+                ks_class_param varchar2 default '[^(集团内)]' 
+                ) 
+is
+
+with gl_info as
+     (
+       select  d.code subj_code , c.name subj_name , c.dispname  disp_name , 
+           e.balanorient , decode(a.periodv, '00', 0, a.localdebitamount) localdebitamount,
+           decode(a.periodv, '00', 0, a.localcreditamount) localcreditamount, 
+           decode(e.balanorient,
+                    0,
+                    a.localdebitamount - a.localcreditamount,
+                    a.localcreditamount - a.localdebitamount) bal,
+            decode(a.periodv,
+                    '00',
+                    decode(e.balanorient,
+                           0,
+                           a.localdebitamount - a.localcreditamount,
+                           a.localcreditamount - a.localdebitamount),
+                    0) bal_beg,  
+           0  bal_age , 0 bal_beg_age , 
+           decode(e.balanorient, dir_param, '+', '-') bal_filter_dir_bz  , 
+           nvl(k.code ,  '~' )   psn_code, 
+           nvl(k.name , '~' )    psn_name, 
+           nvl( h.code , d.code) aux_code , 
+           nvl(h.name , c.name ) aux_name  , 
+           nvl(i.code , '~')  aux_class_cust , 
+           nvl(j.code,  '~')   aux_class_supplier 
+           from  gl_detail  a  
+           inner join  gl_voucher  b 
+               on (
+                     b.pk_voucher = a.pk_voucher
+                     and b.tempsaveflag = 'N'
+                     and b.dr = 0
+                     and b.discardflag = 'N'
+                     and a.discardflagv = 'N'
+                     and a.dr = 0
+                     and length(a.adjustperiod) <= 3
+                     and decode(nvl(b.tallydate, 'Y'), 'Y', 1, 2) >= 1
+                     and a.pk_currtype = '1002Z0100000000001K1'
+                     and a.periodv between '00' and (substr(end_date_param , 6,2) || 'Z')
+                     and a.yearv = substr( end_date_param , 1, 4)
+                     and a.pk_accountingbook = pk_accountingbook_param
+                   )       
+           inner  join bd_accasoa c  
+               on (
+                      c.pk_accasoa = a.pk_accasoa
+                      and c.dr = 0 
+               )
+           inner join bd_account  d 
+              on (
+                      d.pk_account = c.pk_account 
+                      and d.dr = 0 
+                      and regexp_like( d.code , subj_code_param ) 
+              
+              )
+                       
+           inner join  bd_acctype e  
+               on (
+                       e.pk_acctype = d.pk_acctype
+                       and e.dr = 0 
+               )
+               
+           left join gl_docfree1 f   
+                on (
+                     f.assid = a.assid 
+                     and f.dr = 0 
+                
+                )
+                
+            left join bd_psndoc  k 
+                on (
+                      k.pk_psndoc = f.f2
+                      and k.dr = 0 
+                )
+                
+            left  join  bd_cust_supplier  h 
+               on (
+                       h.pk_cust_sup = f.f4
+                       and h.dr = 0 
+               
+               ) 
+               
+               
+           left join  bd_custclass   i 
+              on (
+                   i.pk_custclass = h.pk_custclass
+                   and i.dr = 0 
+              
+              ) 
+    
+          left join  bd_supplierclass j
+              on (
+                   j.pk_supplierclass = h.pk_supplierclass
+                   and j.dr = 0 
+              
+              )
+                       
+
+)
+
+
+
+select * from gl_info  ; 
+
+
+type nt_tb_test is table of cur_tb_test%rowtype;
+
+
+
+function f_tb_test(org_code_param varchar2 default '1000' , 
+                subj_code_param varchar2 default '^1122.*$'  , 
+                end_date_param varchar2 default '2018-06-30' , 
+                dir_param   pls_integer  default  0  , 
+                ks_class_param varchar2 default '[^(集团内)]' ) 
+return nt_tb_test
+pipelined ;
+
+
 end zyhbbi;
 /
 create or replace package body zyhbbi is
@@ -854,25 +977,9 @@ pipe row (l_tbl(x)) ;
 end loop; 
 
 
-/*l_count := l_tbl.count ; 
-for x in  1 .. l_tbl_single.count loop 
-     l_count := l_count +1 ; 
-     l_tbl.extend; 
-     l_tbl(l_count) := l_tbl_single(x) ; 
-
-end loop; 
 
 
-for x in 1 .. l_tbl_single.count loop 
-  
-pipe row (l_tbl_single(x)) ; 
-
-end loop; 
-
-return ; */
-
-
-/*exception 
+exception 
   
     when others  then 
       
@@ -892,9 +999,65 @@ return ; */
        
              close cur_arap_dd_sum ; 
        
-       end  if; */
+       end  if; 
 
 end ;
+
+
+
+
+function f_tb_test(org_code_param varchar2 default '1000' , 
+                subj_code_param varchar2 default '^1122.*$'  , 
+                end_date_param varchar2 default '2018-06-30' , 
+                dir_param   pls_integer  default  0  , 
+                ks_class_param varchar2 default '[^(集团内)]' ) 
+return nt_tb_test
+pipelined
+is
+l_tbl_org  nt_orgbook_info  := new nt_orgbook_info() ; 
+l_tbl  nt_tb_test  := new nt_tb_test() ;
+begin 
+  
+open cur_orgbook_info(org_code_param )  ; 
+fetch cur_orgbook_info bulk collect into l_tbl_org ; 
+close cur_orgbook_info ;
+
+          open cur_tb_test(l_tbl_org(1).pk_accountingbook , subj_code_param ,
+               end_date_param , dir_param , ks_class_param ) ; 
+          fetch cur_tb_test bulk collect into l_tbl ;
+          close cur_tb_test ; 
+          
+
+    
+for x in 1 .. l_tbl.count loop 
+  
+pipe row (l_tbl(x)) ; 
+
+end loop; 
+
+
+
+
+exception 
+  
+    when others  then 
+      
+       if( cur_orgbook_info % isopen ) then 
+       
+           close cur_orgbook_info ;
+ 
+       end if; 
+      
+       if( cur_tb_test % isopen ) then 
+       
+             close cur_tb_test ; 
+       
+       end  if; 
+       
+
+end ;
+
+
 
 begin
    
