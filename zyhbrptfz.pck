@@ -7,16 +7,17 @@ create or replace package zyhbrptfz  authid current_user is
      end_year_param varchar2  , end_month_param varchar2  )  
     is
     select   pk_org  , org_code , org_name , pk_account , subj_code , subj_name , disp_name, 
-       balanorient , ks_code , ks_name, ks_pk , voucher_date ,  year_month , amount  ,'n' handle_mark  
+       balanorient , ks_code , ks_name, ks_pk , ry_code, ry_name,ry_pk, voucher_date ,  year_month , amount  ,'n' handle_mark  
     from 
     (
     select pk_org  , org_code , org_name , pk_account , subj_code , subj_name , disp_name, 
-       balanorient , ks_code , ks_name, ks_pk , voucher_date ,  year_month, sum(amount ) amount 
+       balanorient , ks_code , ks_name, ks_pk , ry_code, ry_name,ry_pk, voucher_date ,  year_month, sum(amount ) amount 
 from 
 (
 select aa.pk_financeorg pk_org , aa.code org_code, aa.name org_name  ,  ff.pk_account pk_account  , 
        ff.code  subj_code , ee.name subj_name , ee.dispname  disp_name , gg.balanorient,
        nvl(ii.code , ee.dispname) ks_code ,nvl(ii.name , ee.dispname) ks_name, nvl(ii.pk_cust_sup ,ee.dispname) ks_pk ,
+       nvl(kk.code , ee.dispname) ry_code ,nvl(kk.name , ee.dispname) ry_name, nvl(kk.pk_psndoc ,ee.dispname) ry_pk ,
        decode( gg.balanorient, 0,   cc.localdebitamount - cc.localcreditamount ,  cc.localcreditamount -  cc.localdebitamount ) amount , 
        beg_year_param ||'-01-01' voucher_date  ,  end_year_param||end_month_param  year_month 
 from  org_financeorg aa  
@@ -64,7 +65,17 @@ left join  gl_docfree1 hh
       on (
              hh.assid = cc.assid 
              and hh.dr = 0 
-       )  
+       ) 
+       
+left join  bd_psndoc   kk 
+      on (
+      
+             kk.pk_psndoc =  hh.f2 
+             and kk.dr = 0 
+      
+      )       
+       
+        
 left join  bd_cust_supplier  ii
       on (
       
@@ -85,17 +96,19 @@ function f_cur_tb_beg (org_code_param varchar2 , subj_code_param varchar2 , beg_
   return nt_tb_beg 
   pipelined  ; 
   
-  
+
  cursor cur_tb_accur(org_code_param varchar2 , subj_code_param varchar2 , beg_year_param varchar2 ,
  beg_month_param varchar2 , end_year_param varchar2 , end_month_param varchar2  )
  is
 select pk_org  , org_code , org_name , pk_account , subj_code , subj_name , disp_name, 
-     balanorient , ks_code , ks_name, ks_pk , voucher_date , year_month    ,amount  ,'n' handle_mark 
+     balanorient , ks_code , ks_name, ks_pk ,  ry_code,  ry_name,   ry_pk, 
+     voucher_date , year_month    ,amount  ,'n' handle_mark 
 from 
 (
 select  aa.pk_financeorg pk_org , aa.code org_code, aa.name org_name  ,  ff.pk_account pk_account  , 
         ff.code  subj_code , ee.name subj_name , ee.dispname  disp_name , gg.balanorient,
        nvl(ii.code , ee.dispname) ks_code ,nvl(ii.name , ee.dispname) ks_name, nvl(ii.pk_cust_sup ,ee.dispname) ks_pk ,
+       nvl(kk.code , ee.dispname) ry_code ,nvl(kk.name , ee.dispname) ry_name, nvl(kk.pk_psndoc ,ee.dispname) ry_pk ,
        substr(cc.PREPAREDDATEV , 1, 10)  voucher_date  ,
        decode( gg.balanorient, 0,   cc.localdebitamount - cc.localcreditamount ,  
        cc.localcreditamount -  cc.localdebitamount )  amount , 
@@ -149,6 +162,17 @@ left join  gl_docfree1 hh
              hh.assid = cc.assid 
              and hh.dr = 0 
        )  
+       
+left join  bd_psndoc   kk 
+      on (
+      
+             kk.pk_psndoc =  hh.f2 
+             and kk.dr = 0 
+      
+      )           
+       
+       
+       
 left join  bd_cust_supplier  ii
       on (
       
@@ -172,7 +196,7 @@ cursor arap_voucher_detail(org_code_param varchar2 , subj_code_param varchar2 , 
 end_year_param varchar2 , end_month_param  varchar2)
 is
 select  pk_org  , org_code , org_name , pk_account , subj_code , subj_name , disp_name, 
-     balanorient , ks_code , ks_name, ks_pk , voucher_date ,year_month,   amount  ,'n'  handle_mark  
+     balanorient , ks_code , ks_name, ks_pk ,ry_code, ry_name, ry_pk, voucher_date ,year_month,   amount  ,'n'  handle_mark  
 from  zyhb_arap_age_year_month 
 where 
 year_month =  beg_year_param ||beg_month_param 
@@ -196,7 +220,7 @@ function f_hx(org_code_param varchar2 , subj_code_param varchar2 , beg_year_para
 cursor  cur_arap_age_year_month_tb(org_code_param varchar2 , subj_code_param varchar2 , end_year_param varchar2 , end_month_param varchar2) 
 is
 select  pk_org  , org_code , org_name , pk_account , subj_code , subj_name , disp_name, 
-     balanorient , ks_code , ks_name, ks_pk  , sum(amount) amount 
+     balanorient , ks_code , ks_name, ks_pk  , ry_code, ry_name ,ry_pk,  sum(amount) amount 
 from  zyhb_arap_age_year_month 
 where   
 1=1
@@ -204,7 +228,7 @@ and   regexp_like(subj_code , subj_code_param)
 and org_code = org_code_param  
 and  year_month = end_year_param || end_month_param 
 group by pk_org  , org_code , org_name , pk_account , subj_code , subj_name , disp_name, 
-     balanorient , ks_code , ks_name, ks_pk ; 
+     balanorient , ks_code , ks_name, ks_pk , ry_code, ry_name ,ry_pk  ; 
 
 
 type  nt_arap_age_year_month_tb  is table of cur_arap_age_year_month_tb%rowtype ;
@@ -223,7 +247,7 @@ create or replace package body zyhbrptfz is
 
 
  l_insert_arap_age_year_month  varchar2(2000)  := 'insert into  zyhb_arap_age_year_month values( :pk_number ,:pk_org , :org_code , :org_name, :pk_account ,    ' ||
-                       ':subj_code , :subj_name,  :disp_name  , :balanorient , :ks_code, :ks_name  ,  :ks_pk ,   '  ||
+                       ':subj_code , :subj_name,  :disp_name  , :balanorient , :ks_code, :ks_name  ,  :ks_pk , :ry_code, :ry_name, :ry_pk ,  '  ||
                        ':voucher_date , :amount, :year_month  ) ' ; 
                        
                        
@@ -238,7 +262,8 @@ create or replace package body zyhbrptfz is
       || 'org_code varchar2(40), org_name varchar2(300) , 
 	   pk_account varchar2(20), subj_code   varchar2(40), subj_name  varchar2(300), 
 	   disp_name varchar2(300), balanorient NUMBER(28,8), ks_code varchar2(300), 
-	   ks_name varchar2(300), ks_pk  varchar2(300) , voucher_date varchar2(10) , 
+	   ks_name varchar2(300), ks_pk  varchar2(300) , ry_code varchar2(300), 
+	   ry_name varchar2(300), ry_pk  varchar2(300) , voucher_date varchar2(10) , 
 	   amount  NUMBER(28,8) ,year_month varchar2(6)  )' ;  
      
  l_idx_arap_age_year_month varchar2(2000) :=  ' create index  idx_arap_age on zyhb_arap_age_year_month (year_month) ' ; 
@@ -462,7 +487,8 @@ is
        
                  if( l_accur_table(x).org_code = l_accur_table(y).org_code  and  
                    l_accur_table(x).subj_code = l_accur_table(y).subj_code and 
-                   l_accur_table(x).ks_code = l_accur_table(y).ks_code  )  then 
+                   l_accur_table(x).ks_code = l_accur_table(y).ks_code  and 
+                   l_accur_table(x).ry_code = l_accur_table(y).ry_code  )  then 
                    
                         if( l_accur_table(x).amount = - l_accur_table(y).amount  ) then 
                         
@@ -506,7 +532,8 @@ is
                  
                if( l_beg_table(x).org_code = l_accur_table(y).org_code  and  
                    l_beg_table(x).subj_code = l_accur_table(y).subj_code and 
-                   l_beg_table(x).ks_code = l_accur_table(y).ks_code  )  then 
+                   l_beg_table(x).ks_code = l_accur_table(y).ks_code and 
+                   l_accur_table(x).ry_code = l_accur_table(y).ry_code )  then 
                    
                     
                
@@ -577,7 +604,8 @@ is
          
                  if( l_accur_table(x).org_code = l_accur_table(y).org_code  and  
                    l_accur_table(x).subj_code = l_accur_table(y).subj_code and 
-                   l_accur_table(x).ks_code = l_accur_table(y).ks_code  )  then 
+                   l_accur_table(x).ks_code = l_accur_table(y).ks_code  and 
+                   l_accur_table(x).ry_code = l_accur_table(y).ry_code )  then 
                    
                    
                         l_find_mark := 1 ; 
