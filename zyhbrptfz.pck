@@ -85,7 +85,7 @@ left join  bd_cust_supplier  ii
       ) 
 )
 group by  pk_org  , org_code , org_name , pk_account , subj_code , subj_name , disp_name, 
-       balanorient , ks_code , ks_name, ks_pk , voucher_date  , year_month
+       balanorient , ks_code , ks_name, ks_pk ,ry_code, ry_name, ry_pk ,  voucher_date  , year_month
        )  order by  org_code, subj_code, ks_code, voucher_date  ;
 
 type  nt_tb_beg  is table of  cur_tb_beg%rowtype ; 
@@ -180,7 +180,7 @@ left join  bd_cust_supplier  ii
              and ii.dr = 0 
       
       ) 
-)  order by  org_code, subj_code,  ks_code, voucher_date;
+)  order by  org_code, subj_code,  ks_code, ry_code ,  voucher_date;
 
 
 type nt_tb_accur  is table of  cur_tb_accur%rowtype ; 
@@ -201,7 +201,7 @@ from  zyhb_arap_age_year_month
 where 
 year_month =  beg_year_param ||beg_month_param 
 and org_code =  org_code_param
-order by  org_code , subj_code, ks_code, voucher_date  ;
+order by  org_code , subj_code, ks_code,ry_code,  voucher_date  ;
 
 
 type nt_arap_voucher_detail   is table of   arap_voucher_detail%rowtype ;
@@ -533,7 +533,7 @@ is
                if( l_beg_table(x).org_code = l_accur_table(y).org_code  and  
                    l_beg_table(x).subj_code = l_accur_table(y).subj_code and 
                    l_beg_table(x).ks_code = l_accur_table(y).ks_code and 
-                   l_accur_table(x).ry_code = l_accur_table(y).ry_code )  then 
+                   l_beg_table(x).ry_code = l_accur_table(y).ry_code )  then 
                    
                     
                
@@ -583,17 +583,9 @@ is
           end if; 
           
           
-         l_find_mark := 0 ; 
-         
          for y  in   l_accur_count  ..   l_accur_table.count loop
          
-         
-         
-                 if( l_find_mark = 3   ) then 
-                 
-                      exit; 
-                 
-                 end if ; 
+        
          
                  if( l_accur_table(y).handle_mark ='y'  or l_accur_table(y).amount = 0  )  then 
                       
@@ -606,9 +598,7 @@ is
                    l_accur_table(x).subj_code = l_accur_table(y).subj_code and 
                    l_accur_table(x).ks_code = l_accur_table(y).ks_code  and 
                    l_accur_table(x).ry_code = l_accur_table(y).ry_code )  then 
-                   
-                   
-                        l_find_mark := 1 ; 
+                    
                    
                         if(l_accur_table(x).amount * l_accur_table(y).amount  <0   )  then 
                       
@@ -633,24 +623,7 @@ is
                  
                   end if; 
                   
-                  
-                  if(l_find_mark =1  ) then 
-                      
-                        l_find_mark := 2 ; 
-                  
-                  elsif ( l_find_mark =2)  then 
-                  
-                       l_find_mark := 3; 
-                        
-                        
-                  else
-                  
-                      l_find_mark  := 0 ; 
-                  
-                  end if; 
-                  
-                   
-         
+                 
          
         end loop ;  
   
@@ -690,6 +663,9 @@ is
                     l_beg_table(x).ks_code, 
                     l_beg_table(x).ks_name, 
                     l_beg_table(x).ks_pk, 
+                    l_beg_table(x).ry_code, 
+                    l_beg_table(x).ry_name, 
+                    l_beg_table(x).ry_pk,
                     l_beg_table(x).voucher_date, 
                     l_beg_table(x).amount,
                     --l_beg_table(x).year_month  ; 
@@ -719,6 +695,9 @@ is
                     l_accur_table(x).ks_code, 
                     l_accur_table(x).ks_name, 
                     l_accur_table(x).ks_pk, 
+                    l_beg_table(x).ry_code, 
+                    l_beg_table(x).ry_name, 
+                    l_beg_table(x).ry_pk,
                     l_accur_table(x).voucher_date, 
                     l_accur_table(x).amount,
                     l_accur_table(x).year_month  ; 

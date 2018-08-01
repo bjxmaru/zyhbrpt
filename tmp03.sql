@@ -16,8 +16,12 @@ beg_month_param => '01',end_year_param => '2016',end_month_param => '12'))
   create table zyhb_arap_age_year_month (  pk_number integer  ,pk_org varchar2(20) , org_code varchar2(40), org_name varchar2(300) , 
      pk_account varchar2(20), subj_code   varchar2(40), subj_name  varchar2(300), 
      disp_name varchar2(300), balanorient NUMBER(28,8), ks_code varchar2(300), 
-     ks_name varchar2(300), ks_pk  varchar2(300) , voucher_date varchar2(10) , 
+     ks_name varchar2(300), ks_pk  varchar2(300) ,ry_code varchar2(300), 
+     ry_name varchar2(300), ry_pk  varchar2(300)  , voucher_date varchar2(10) , 
      amount  NUMBER(28,8) ,year_month varchar2(6)  )
+     
+     create index  idx_arap_age on zyhb_arap_age_year_month (year_month)
+     
      
      
      drop table zyhb_arap_age_year_month
@@ -47,7 +51,36 @@ beg_month_param => '12',end_year_param => '2017',end_month_param => '12',init_ma
     
      create index  idx_arap_age on zyhb_arap_age_year_month (year_month) ; 
      
+     select  * from  bd_cust_supplier 
      
+     select aa.pk_financeorg pk_org , bb.pk_accountingbook , aa.code  org_code , aa.name org_name   from  org_financeorg aa,  org_accountingbook bb 
+ where 
+ 1=1
+ and bb.pk_relorg = aa.pk_financeorg 
+ and bb.dr = 0 
+ and aa.dr = 0 
+ and aa.code  like '1000'
+     
+     
+     select * from gl_verify_log ; 
+     
+     select * from bd_currtype
+     
+     select * from bd_psndoc
+     
+     
+          select * from  table( zyhbbi.f_arap(org_code_param => '1000',
+          subj_code_param => '(1221)|(2241).*$' ,  end_date_param =>'2018-06-30' ,   dir_param => 0,
+        ks_class_param => '*'  ,sum_param => 'single') )
+        
+        
+        
+          select * from  table( zyhbbi.f_tb_test(org_code_param => '1010',
+          subj_code_param => '(122102)|(224102).*$' ,  end_date_param =>'2018-06-30' ,   dir_param => 0,
+        ks_class_param => '*') )
+     
+     select * from  table( zyhbbi.f_arap(org_code_param => '1000',subj_code_param => '*' ,end_year_param => '2018' ,
+     end_month_param => '05' ,dir_param => 0,beg_year_param => '2018',beg_month_param => '01',glf_mark_param => '[^(集团内)]') )
      
      select * from  table( zyhbbi.f_arap(org_code_param => '1000',end_year_param => '2018',
-     end_month_param => '05' ,beg_year_param => '2018',beg_month_param => '01',glf_mark_param => '[^(集团内)]') )
+     end_month_param => '05' ,beg_year_param => '2018',beg_month_param => '01',glf_mark_param => '^(集团内)') )

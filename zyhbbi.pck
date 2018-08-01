@@ -70,6 +70,8 @@ with gl_info as
            decode(e.balanorient, dir_param, '+', '-') bal_filter_dir_bz  , 
            nvl( h.code , d.code) aux_code , 
            nvl(h.name , c.name ) aux_name  , 
+           nvl( k.code , d.code) ry_code , 
+           nvl( k.name , c.name ) ry_name  , 
            nvl(i.code , '~')  aux_class_cust , 
            nvl(j.code,  '~')   aux_class_supplier , 
            0 bal_0 , 0 bal_1 , 0 bal_2,  0 bal_3, 0 bal_4,  0 bal_5 
@@ -115,6 +117,13 @@ with gl_info as
                 
                 )
                 
+             left join  bd_psndoc   k 
+                on (
+                       k.pk_psndoc =  f.f2
+                       and k.dr = 0 
+                
+                )   
+                
             left  join  bd_cust_supplier  h 
                on (
                        h.pk_cust_sup = f.f4
@@ -122,7 +131,8 @@ with gl_info as
                
                )
                
-               
+          
+                        
            left join  bd_custclass   i 
               on (
                    i.pk_custclass = h.pk_custclass
@@ -155,6 +165,8 @@ decode(ddd.balanorient,0,
 decode(ddd.balanorient, dir_param , '+', '-') bal_filter_dir_bz , 
 nvl(ggg.code , ccc.code) aux_code , 
 nvl(ggg.name , bbb.name) aux_name ,
+nvl(kkk.code , ccc.code) ry_code , 
+nvl(kkk.name , bbb.name) ry_name ,
 nvl(hhh.code , '~')  aux_class_cust , 
 nvl(iii.code,  '~')   aux_class_supplier , 
 case
@@ -285,6 +297,15 @@ left join    gl_docfree1   eee
         and eee.dr = 0 
     
     )
+    
+    
+left join  bd_psndoc    kkk 
+   on (
+   
+        kkk.pk_psndoc = eee.f2
+        and kkk.dr = 0 
+   
+   )
 
 left join   bd_cust_supplier ggg 
      on (
@@ -314,7 +335,7 @@ gl_age_union_info as
 (
 
     select subj_code, subj_name ,disp_name ,balanorient ,  bal_filter_dir_bz , 
-    aux_code ,aux_name ,  aux_class_cust ,aux_class_supplier , 
+    aux_code ,aux_name ,ry_code ,ry_name,   aux_class_cust ,aux_class_supplier , 
     sum( localdebitamount) localdebitamount , 
     sum(localcreditamount ) localcreditamount , 
     sum(bal) bal , 
@@ -347,24 +368,24 @@ gl_age_union_info as
     from 
     (                
     select subj_code, subj_name ,disp_name ,balanorient , localdebitamount , localcreditamount  ,
-    bal , bal_beg , bal_age ,bal_beg_age,  bal_filter_dir_bz , aux_code ,aux_name , aux_class_cust , 
+    bal , bal_beg , bal_age ,bal_beg_age,  bal_filter_dir_bz , aux_code ,aux_name ,ry_code, ry_name, aux_class_cust , 
     aux_class_supplier,  bal_0 , bal_1, bal_2, bal_3, bal_4, bal_5 
     from gl_info 
     union all 
     select subj_code, subj_name ,disp_name ,balanorient , localdebitamount , localcreditamount  ,
-    bal , bal_beg , bal_age ,bal_beg_age,  bal_filter_dir_bz , aux_code ,aux_name ,  aux_class_cust , 
+    bal , bal_beg , bal_age ,bal_beg_age,  bal_filter_dir_bz , aux_code ,aux_name , ry_code, ry_name, aux_class_cust , 
     aux_class_supplier, bal_0 , bal_1, bal_2, bal_3, bal_4, bal_5 
     from gl_verify_info
     )  
     group by subj_code, subj_name ,disp_name ,balanorient ,  bal_filter_dir_bz , 
-    aux_code ,aux_name ,  aux_class_cust ,aux_class_supplier 
+    aux_code ,aux_name , ry_code, ry_name, aux_class_cust ,aux_class_supplier 
 
 ) , 
 
 gl_with_age  as 
 (
     select subj_code, subj_name ,disp_name ,balanorient ,  bal_filter_dir_bz , 
-    aux_code ,aux_name ,  aux_class_cust ,aux_class_supplier ,     
+    aux_code ,aux_name ,ry_code, ry_name ,   aux_class_cust ,aux_class_supplier ,     
     decode(selected_mark,  'Y+', localdebitamount, -localdebitamount) localdebitamount,
      decode(selected_mark, 'Y+', localcreditamount, -localcreditamount) localcreditamount,
      decode(selected_mark, 'Y+', bal, -bal) bal,
@@ -436,6 +457,8 @@ with gl_info as
            decode(e.balanorient, dir_param, '+', '-') bal_filter_dir_bz  , 
            nvl( h.code , d.code) aux_code , 
            nvl(h.name , c.name ) aux_name  , 
+           nvl( k.code , d.code) ry_code , 
+           nvl(k.name , c.name ) ry_name  , 
            nvl(i.code , '~')  aux_class_cust , 
            nvl(j.code,  '~')   aux_class_supplier , 
            0 bal_0 , 0 bal_1 , 0 bal_2,  0 bal_3, 0 bal_4,  0 bal_5 
@@ -481,6 +504,13 @@ with gl_info as
                 
                 )
                 
+           left join bd_psndoc  k 
+                 on (
+                     k.pk_psndoc = f.f2 
+                     and k.dr = 0 
+                 
+                 )
+                
             left  join  bd_cust_supplier  h 
                on (
                        h.pk_cust_sup = f.f4
@@ -521,6 +551,8 @@ decode(ddd.balanorient,0,
 decode(ddd.balanorient, dir_param , '+', '-') bal_filter_dir_bz , 
 nvl(ggg.code , ccc.code) aux_code , 
 nvl(ggg.name , bbb.name) aux_name ,
+nvl(kkk.code , ccc.code) ry_code , 
+nvl(kkk.name , bbb.name) ry_name ,
 nvl(hhh.code , '~')  aux_class_cust , 
 nvl(iii.code,  '~')   aux_class_supplier , 
 case
@@ -649,6 +681,13 @@ left join    gl_docfree1   eee
     on (
         eee.assid = aaa.assid
         and eee.dr = 0 
+    
+    )
+    
+left join   bd_psndoc   kkk 
+    on (
+        kkk.pk_psndoc = eee.f2 
+        and  kkk.dr = 0 
     
     )
 
@@ -811,8 +850,8 @@ with gl_info as
                     0) bal_beg,  
            0  bal_age , 0 bal_beg_age , 
            decode(e.balanorient, dir_param, '+', '-') bal_filter_dir_bz  , 
-           nvl(k.code ,  '~' )   psn_code, 
-           nvl(k.name , '~' )    psn_name, 
+           nvl(k.code , d.code )   psn_code, 
+           nvl(k.name , c.name )    psn_name, 
            nvl( h.code , d.code) aux_code , 
            nvl(h.name , c.name ) aux_name  , 
            nvl(i.code , '~')  aux_class_cust , 
